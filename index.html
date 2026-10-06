@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nudge — stop overthinking, start doing</title>
+<meta name="description" content="Stuck in your head? Nudge helps you break free from overthinking and actually do the thing." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:ital,wght@0,500;1,500&family=Patrick+Hand&display=swap" />
+<style>
+:root{
+  --cursor:oklch(64% .2 252);
+  --cursor-foreground:oklch(99% 0 0);
+  --cursor-border:oklch(53% .22 252);
+  --border:oklch(78% .005 70);
+  --background:oklch(97.5% .003 85);
+  --foreground:#0a7c75;
+  --muted:oklch(93.5% .004 85);
+  --muted-foreground:oklch(53% .008 70);
+  --primary-foreground:oklch(98.4% .003 247.858);
+  --sans:"DM Sans",sans-serif;
+  --serif:"Newsreader",serif;
+  --ease-out:cubic-bezier(.22,.7,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;border:0 solid}
+html{scroll-behavior:smooth}
+body{background:var(--background);color:var(--foreground);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;user-select:none}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:transparent;cursor:pointer}
+img,svg{display:block}
+img{-webkit-user-drag:none;-webkit-touch-callout:none}
+
+@keyframes reveal{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes draw-string{0%{stroke-dashoffset:1px}to{stroke-dashoffset:0}}
+.animate-reveal{animation:.7s var(--ease-out) both reveal}
+.animate-draw-string{animation:3.8s var(--ease-out) both draw-string}
+
+/* header */
+header{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:1.25rem;transition:opacity .7s}
+header.intro{pointer-events:none;animation-delay:2.6s}
+.logo{width:fit-content;font-family:var(--serif);font-size:1.875rem;line-height:calc(2.25/1.875);font-weight:500}
+header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-height:calc(1.25/.875);font-weight:500}
+.story-link{position:relative}
+.story-link::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease-out)}
+.story-link:hover::after{transform:scaleX(1);transform-origin:left}
+@media (min-width:640px){header{padding:1.75rem 2rem}}
+@media (min-width:768px){header nav{display:flex}}
+
+/* buttons */
+.btn{display:inline-flex;height:3rem;align-items:center;justify-content:center;border:1px solid var(--foreground);padding:0 1.75rem;font-size:.875rem;line-height:calc(1.25/.875);font-weight:500;transition:background-color .2s,color .2s,transform .2s}
+.btn:hover{transform:translateY(-.125rem)}
+.btn-paper{background:var(--background);color:var(--foreground);margin-right:.5rem}
+.btn-paper:hover{background:var(--muted)}
+.btn-ink{background:var(--foreground);color:var(--primary-foreground)}
+.btn-ink:hover{background:color-mix(in oklab,var(--foreground) 85%,transparent)}
+
+/* brain: horizontal story track */
+#brain{position:relative}
+@media (min-width:768px){#brain{height:720vh}}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.track{position:relative;height:100%;width:570vw;will-change:transform}
+.thread{pointer-events:none;position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.layer{position:absolute;inset:0;z-index:10}
+
+/* hero */
+.hero{position:absolute;left:0;top:0;height:100%;width:100vw}
+.anatomy{position:absolute;bottom:2.5rem;left:2rem;transition:all .7s}
+.anatomy p{font-size:2.25rem;line-height:.95;font-weight:600}
+.anatomy em{font-family:var(--serif);font-style:italic;font-weight:500}
+.note{position:absolute;left:62%;top:7rem;display:flex;max-width:14rem;align-items:flex-start;gap:.5rem;transform-origin:bottom left;font-size:.875rem;line-height:calc(1.25/.875);color:var(--muted-foreground);transition:all .5s}
+.note svg{margin-top:.25rem;height:1.5rem;width:2rem;flex-shrink:0}
+.welcome{position:absolute;bottom:2rem;right:2rem;display:none;text-align:right;transition:all .7s .15s}
+.welcome p{margin-bottom:1rem;font-size:.875rem;line-height:calc(1.25/.875)}
+@media (min-width:640px){
+  .anatomy{bottom:2rem}
+  .anatomy p{font-size:3rem;line-height:.95}
+  .welcome{display:block}
+}
+/* mobile menu */
+.menu-btn{position:relative;height:2.5rem;width:2.5rem;pointer-events:auto}
+.menu-btn span{position:absolute;left:50%;top:50%;height:2px;width:1.75rem;border-radius:9999px;background:var(--foreground);transition:all .3s;transform:translate(-50%,-5px)}
+.menu-btn span+span{transform:translate(-50%,4px)}
+.menu-btn[aria-expanded="true"] span{transform:translate(-50%,0) rotate(45deg)}
+.menu-btn[aria-expanded="true"] span+span{transform:translate(-50%,0) rotate(-45deg)}
+.menu{position:absolute;left:1rem;right:1rem;top:4rem;display:grid;gap:.25rem;border:1px solid var(--border);background:var(--background);padding:.75rem;font-size:1.125rem;box-shadow:0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a;pointer-events:auto}
+.menu[hidden]{display:none}
+.menu>*{padding:.75rem;text-align:left}
+@media (min-width:768px){.menu-btn,.menu{display:none!important}}
+
+/* desktop story chapters: placed in vw / vh along the thread */
+.at{position:absolute}
+.d-display{font-family:var(--serif);font-weight:500;font-size:3.75rem;line-height:1.1}
+.d-big{font-family:var(--serif);font-weight:500;font-size:2.25rem;line-height:1.15}
+.d-love{display:flex;align-items:center;gap:1.25rem}
+.d-love .copy{max-width:17rem}
+.d-love .copy p+p{margin-top:.5rem;color:var(--muted-foreground)}
+.d-climber{position:absolute;left:174.5vw;top:35.6vh;height:24vh;aspect-ratio:96/156;translate:-57% -20%}
+.d-tick{position:absolute;width:1px;height:11vh;background:color-mix(in oklab,var(--muted-foreground) 60%,transparent)}
+.d-knot{position:absolute;height:.5rem;width:.5rem;margin:-.25rem 0 0 -.25rem;border-radius:9999px;background:var(--foreground)}
+.d-card{position:absolute;width:15vw;translate:-.5rem 0}
+.d-card .year{font-size:.75rem;color:var(--muted-foreground)}
+.d-card .title{font-family:var(--serif);font-weight:500;font-size:1.4rem;line-height:1.15}
+.d-card .body{margin-top:.15rem;font-size:.85rem;line-height:1.35;color:var(--muted-foreground)}
+.d-dot{position:absolute;height:.75rem;width:.75rem;translate:-50% -50%;border-radius:9999px;background:var(--foreground)}
+.d-lbl{position:absolute;white-space:nowrap;font-size:1.125rem}
+
+/* desktop vs mobile story */
+.stage{display:none}
+@media (min-width:768px){.stage{display:block}.mobile{display:none}}
+
+/* mobile story: vertical, the thread follows the page down */
+.mobile{position:relative;overflow:hidden}
+.m-thread{pointer-events:none;position:absolute;left:0;top:0;opacity:0;transition:opacity .7s}
+.m-thread.on{opacity:1}
+.m-hero{position:relative;height:132svh}
+.m-scribble{position:absolute;left:0;right:0;top:27svh;height:50svh;width:100%;overflow:visible}
+.m-note{position:absolute;right:1.25rem;top:17svh;display:flex;width:11rem;align-items:flex-start;gap:.375rem;font-size:.8rem;line-height:1.375;color:var(--muted-foreground)}
+.m-note svg{margin-top:1rem;height:1.25rem;width:1.75rem;flex-shrink:0}
+.m-anatomy{position:absolute;left:1.25rem;top:90svh;font-size:2.6rem;line-height:.95;font-weight:600}
+.m-anatomy em{font-family:var(--serif);font-style:italic;font-weight:500}
+.anchor{position:absolute}
+.muted{color:var(--muted-foreground)}
+
+/* scroll-in reveal */
+.reveal{transition:opacity .9s ease-out,filter .9s ease-out,transform .9s var(--ease-out);transition-delay:var(--reveal-delay,0s)}
+.reveal:not([data-shown]){opacity:0;filter:blur(12px);transform:translateY(.5rem);transition-delay:0s}
+
+/* floating objects with a speech-bubble label */
+@keyframes float-object{0%,to{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes hang{0%,to{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pulse{50%{opacity:.5}}
+.figure{position:relative;flex-shrink:0;perspective:900px}
+.figure.sm{height:9rem;width:9rem}
+.figure.md{height:11rem;width:11rem}
+.figure.fill{height:100%;width:100%}
+@media (min-width:1024px){.figure.sm{height:11rem;width:11rem}.figure.md{height:14rem;width:14rem}}
+.figure .shadow{position:absolute;bottom:6%;left:50%;height:1rem;width:50%;border-radius:50%;background:color-mix(in oklab,var(--foreground) 20%,transparent);filter:blur(12px);transform:translateX(-50%);transition:all .5s}
+.figure.open .shadow{transform:translateX(-50%) scale(.8);opacity:.6}
+.figure .float{height:100%;width:100%;animation:5s ease-in-out infinite float-object}
+.figure .float.hang{transform-origin:57% 20%;animation:3.2s ease-in-out infinite hang}
+.figure .float.still{animation:none}
+.figure img{height:100%;width:100%;object-fit:contain;user-select:none;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.bubble{pointer-events:none;position:absolute;z-index:40;width:max-content;max-width:min(16rem,calc(100vw - 2rem));white-space:pre-line;bottom:calc(100% + 4px);left:50%;translate:-50% 0;border:1px solid var(--cursor-border);background:var(--cursor);color:var(--cursor-foreground);padding:.5rem 1rem;font-size:.875rem;line-height:calc(1.25/.875);border-radius:18px 18px 18px 5px;box-shadow:0 10px 15px -3px #0000001a,0 4px 6px -4px #0000001a;opacity:0;transform:translateY(.75rem) scale(.9);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.bubble.left{left:0;translate:none}
+.bubble.right{left:auto;right:0;translate:none;border-radius:18px 18px 5px 18px}
+.figure.open .bubble{opacity:1;transform:none}
+.bubble i{font-style:normal;animation:2s cubic-bezier(.4,0,.6,1) infinite pulse}
+
+/* mobile story chapters */
+.m-trades{position:relative;height:1500px}
+.m-trades .obj{position:absolute}
+.m-trades .center{position:absolute;left:0;right:0;top:420px;margin:0 auto;max-width:17rem;text-align:center}
+.m-trades h2{margin-top:.25rem;white-space:nowrap;font-family:var(--serif);font-weight:500;font-size:2.1rem;line-height:1.25}
+.m-climber{position:absolute;height:156px;width:6rem;touch-action:none;translate:-57% -20%;transition:left .4s,top .4s}
+.m-climber.dragging{transition:none}
+.m-heart{position:relative;padding:1.5rem 1.25rem 0}
+.m-heart h2{text-align:center;font-family:var(--serif);font-weight:500;font-size:2.4rem;line-height:1}
+.m-love{position:relative;margin-top:2.5rem;width:66%}
+.m-love.alt{margin-left:auto;text-align:right}
+.m-love .fig-wrap{position:relative;width:fit-content}
+.m-love.alt .fig-wrap{margin-left:auto}
+.m-love .title{font-family:var(--serif);font-weight:500;font-size:1.5rem;line-height:1.25}
+.m-love .body{margin-top:.25rem;font-size:.875rem;line-height:1.375;color:var(--muted-foreground)}
+.m-timeline{position:relative;margin-top:5rem;padding:0 1.25rem}
+.m-timeline .lead{margin:0 auto;max-width:18rem;text-align:center;font-family:var(--serif);font-weight:500;font-size:2rem;line-height:1.25}
+.m-timeline ol{position:relative;margin-top:2.5rem;padding-left:2.25rem;list-style:none}
+.m-timeline li{position:relative;padding-bottom:1.75rem}
+.m-timeline .tick{position:absolute;left:-1.1rem;top:.7rem;height:1px;width:.75rem;background:color-mix(in oklab,var(--muted-foreground) 60%,transparent)}
+.m-timeline .pip{position:absolute;left:-.4rem;top:.55rem;height:.375rem;width:.375rem;border-radius:9999px;background:var(--muted-foreground)}
+.m-timeline .pin{position:absolute;left:-1.1rem;top:.7rem}
+.m-timeline .line{font-size:.875rem;line-height:1.375;color:var(--muted-foreground)}
+.m-timeline .year{margin-top:.125rem;font-size:.75rem;color:color-mix(in oklab,var(--muted-foreground) 80%,transparent)}
+.m-own{position:relative;padding:1rem 1.25rem 0}
+.m-own .big{text-align:center;font-family:var(--serif);font-weight:500;font-size:2rem}
+.m-own .small{margin:.75rem auto 0;max-width:19rem;text-align:center;font-size:.875rem;line-height:1.375}
+.m-loop{position:relative;margin-top:4rem;padding:0 1.25rem}
+.m-loop .big{font-family:var(--serif);font-weight:500;font-size:2.3rem;line-height:1.05}
+.m-loop .ring{position:relative;margin-top:1rem;height:270px}
+.m-loop .ring span{position:absolute;white-space:nowrap;font-size:.875rem}
+.m-loop .ring .repeat{font-family:var(--serif);font-style:italic;font-weight:500;font-size:1.5rem;translate:-50% -50%}
+.m-cta{position:relative;padding:3.5rem 1.25rem 6rem;text-align:center}
+.m-cta h2{margin-top:.5rem;font-family:var(--serif);font-weight:500;font-size:2.3rem;line-height:1.25}
+.m-cta .btn-wrap{position:relative;margin-top:1.75rem;display:inline-block}
+.btn svg{margin-left:.5rem;height:1rem;width:1rem}
+
+.d220{animation-delay:2.2s}
+.d235{animation-delay:2.35s}
+</style>
+</head>
+<body>
+<main>
+  <header class="intro animate-reveal" id="header">
+    <button class="logo" aria-label="Back to top" data-go="brain">nudge</button>
+    <nav aria-label="Main navigation">
+      <button class="story-link" data-go="features">features</button>
+      <button class="story-link" data-go="how">how it works</button>
+      <button class="story-link" data-go="start">start free trial</button>
+    </nav>
+    <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="menu" id="menu" hidden>
+      <button data-go="features">features</button>
+      <button data-go="how">how it works</button>
+      <button data-go="start">start free trial</button>
+    </nav>
+  </header>
+
+  <section id="brain">
+    <div class="stage">
+      <div class="track" id="track">
+        <svg class="thread" aria-hidden="true" viewBox="0 0 5700 1000" preserveAspectRatio="none">
+          <path id="thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.058s;animation-delay:0.207s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M652 341 C736 176 676 270 595 393 C551 502 511 179 608 312 C612 397 708 447 616 375 C736 373 748 312 627 469 C552 479 478 362 535 275 C572 284 689 483 596 461" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.064s;animation-delay:0.325s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M566 565 C690 668 539 510 601 520 C501 495 679 640 594 488 C588 419 456 553 539 509 C654 369 727 177 651 357 C569 254 524 516 473 584 C434 629 437 615 543 528" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.073s;animation-delay:0.457s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M617 482 C541 668 630 423 525 561 C455 646 384 347 449 499 C539 470 700 212 622 354 C596 424 286 189 397 302 C446 458 674 337 547 482 C549 579 634 356 633 287" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.085s;animation-delay:0.608s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M661 443 C716 574 443 556 529 573 C594 538 432 461 514 588 C517 405 556 436 450 322 C505 459 612 520 577 556 C604 558 721 555 590 440 C525 596 458 425 392 320" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.104s;animation-delay:0.786s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M462 352 C597 406 484 646 429 547 C559 367 672 461 640 371 C574 334 357 135 479 238 C445 135 484 601 551 447 C565 450 754 442 661 416 C754 468 560 135 476 191" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.139s;animation-delay:1.008s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M510 212 C417 308 529 344 558 194 C625 135 578 668 446 536 C331 668 614 267 632 276 C754 178 412 653 405 488 C465 476 724 388 594 268 C622 135 486 278 453 295" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C569 524 619 135 569 199" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <circle id="thread-dot" r="9" cx="569" cy="199" style="opacity:0" fill="currentColor" />
+        </svg>
+        <div class="layer">
+          <div class="hero">
+            <div class="anatomy animate-reveal d220">
+              <p>stop<br />overthinking.<br /><em>start doing.</em></p>
+            </div>
+            <div class="note animate-reveal d220">
+              <svg aria-hidden="true" viewBox="0 0 40 30">
+                <path d="M38 4 C24 6 12 14 4 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                <path d="M4 24 L13 22 M4 24 L7 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+              <span>an almost accurate map of your head at 2am.</span>
+            </div>
+            <div class="welcome animate-reveal d235">
+              <p style="max-width:20rem;margin-left:auto">the friend who calls you out (kindly) and helps you take the one small step that gets you moving.</p>
+              <button class="btn btn-paper" data-go="how">how it works</button>
+              <button class="btn btn-ink" data-go="start">start free trial</button>
+            </div>
+          </div>
+
+          <!-- chapter 1 · jack of all trades (100–175vw) -->
+          <div class="at" style="left:100vw;top:6vh"><div class="figure sm" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:101vw;top:62vh"><div class="figure sm" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at reveal" style="left:116vw;top:36vh;width:34vw;text-align:center" data-at="122">
+            <p class="muted" style="font-size:1.125rem">stuck in your head?</p>
+            <h2 class="d-display" style="white-space:nowrap">we've all been there.</h2>
+            <p class="muted" style="font-size:1.125rem;margin-top:.5rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
+          </div>
+          <div class="at" style="left:121vw;top:73vh"><div class="figure sm" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:134vw;top:10vh"><div class="figure sm" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:150vw;top:66vh"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="d-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float hang"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+
+          <!-- chapter 2 · few things have my heart (180–290vw) -->
+          <div class="at reveal" style="left:182vw;top:12vh;width:22rem" data-at="184">
+            <h2 class="d-display" style="line-height:1">so, meet nudge.</h2>
+          </div>
+          <div class="at reveal d-love" style="left:190vw;top:70vh" data-at="194">
+            <div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="copy"><p class="d-big">a friend, not a coach.</p><p>it calls you out (kindly) and helps you move forward.</p></div>
+          </div>
+          <div class="at reveal d-love" style="left:212vw;top:6vh" data-at="216">
+            <div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:.5s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="copy"><p class="d-big">no productivity guilt.</p><p>not hustle culture. not optimizing your life.</p></div>
+          </div>
+          <div class="at reveal d-love" style="left:250vw;top:28vh" data-at="254">
+            <div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="copy"><p class="d-big">fewer stories. more living.</p><p>get unstuck from the stories we tell ourselves, and get back to your day.</p></div>
+          </div>
+
+          <!-- chapter 3 · timeline (300–410vw): knots sit on the thread waypoints -->
+          <div class="reveal" data-at="304"><span class="d-tick" style="left:304vw;top:37vh"></span><span class="d-knot" style="left:304vw;top:48vh"></span><div class="d-card" style="left:304vw;bottom:64vh"><p class="year">8:00 am · daily nudge</p><p class="title">a gentle ping.</p><p class="body">a daily nudge notification checks in before the spiral starts.</p></div></div>
+          <div class="reveal" data-at="322"><span class="d-tick" style="left:322vw;top:51vh"></span><span class="d-knot" style="left:322vw;top:51vh"></span><div class="d-card" style="left:322vw;top:63vh"><p class="year">9:15 am · mood check-in</p><p class="title">one tap. that's it.</p><p class="body">a quick mood check-in, right from your home screen widget.</p></div></div>
+          <div class="reveal" data-at="340"><span class="d-tick" style="left:340vw;top:41vh"></span><span class="d-knot" style="left:340vw;top:52vh"></span><div class="d-card" style="left:340vw;bottom:60vh"><p class="year">11:40 am · the tab situation</p><p class="title">you spill it.</p><p class="body">23 tabs, one decision. nudge asks what you'd pick if you had to choose right now.</p></div></div>
+          <div class="reveal" data-at="358"><span class="d-tick" style="left:358vw;top:50vh"></span><span class="d-knot" style="left:358vw;top:50vh"></span><div class="d-card" style="left:358vw;top:62vh"><p class="year">11:52 am · one small step</p><p class="title">22 tabs closed.</p><p class="body">the decision took four minutes. the drama took three weeks.</p></div></div>
+          <div class="reveal" data-at="376"><span class="d-tick" style="left:376vw;top:35vh"></span><span class="d-knot" style="left:376vw;top:46vh"></span><div class="d-card" style="left:376vw;bottom:66vh"><p class="year">6:30 pm · conversation history</p><p class="title">it's all still there.</p><p class="body">what you were stuck on, and how you got unstuck.</p></div></div>
+          <div class="reveal" data-at="394"><span class="d-tick" style="left:394vw;top:43vh"></span><span class="d-knot" style="left:394vw;top:43vh"></span><div class="d-card" style="left:394vw;top:55vh"><p class="year">tomorrow · memory</p><p class="title">it remembers you.</p><p class="body">memory that learns about you, so the next nudge fits a little better.</p></div></div>
+          <div class="at reveal" style="left:302vw;top:84vh" data-at="302">
+            <p class="d-display" style="font-size:3rem;white-space:nowrap;line-height:1">turns out, <span class="muted">it was never...</span></p>
+          </div>
+          <div class="at reveal" style="left:348vw;top:84vh" data-at="350">
+            <p class="d-display" style="font-size:3rem;white-space:nowrap;line-height:1"><span class="muted">...that</span> deep.</p>
+          </div>
+          <div class="at reveal" style="left:382vw;top:80vh;max-width:22rem" data-at="384">
+            <p>the decision was never the hard part.</p>
+            <p class="muted">the story we told ourselves about it was.</p>
+          </div>
+
+          <!-- chapter 4 · the loop (415–490vw) -->
+          <div class="at reveal" style="left:416vw;top:16vh;width:26rem" data-at="424">
+            <p class="d-display" style="line-height:1.05">how it works. <span class="muted">no hustle required.</span></p>
+          </div>
+          <div class="reveal" data-mode="thread" data-at="470"><span class="d-dot" style="left:474vw;top:70vh"></span><p class="d-lbl" style="left:474vw;top:70vh;translate:-50% 1rem">share what's on your mind.</p></div>
+          <div class="reveal" data-mode="thread" data-at="483"><span class="d-dot" style="left:483.44vw;top:53vh"></span><p class="d-lbl" style="left:483.44vw;top:53vh;translate:1.25rem -50%">get a fresh perspective.</p></div>
+          <div class="reveal" data-mode="thread" data-at="486" style="--reveal-delay:.3s"><span class="d-dot" style="left:474vw;top:36vh"></span><p class="d-lbl" style="left:474vw;top:36vh;translate:-50% calc(-100% - 1rem)">take the simplest next step.</p></div>
+          <div class="reveal" data-mode="thread" data-at="486" style="--reveal-delay:.6s"><span class="d-dot" style="left:464.56vw;top:53vh"></span><p class="d-lbl" style="left:464.56vw;top:53vh;translate:calc(-100% - 1.25rem) -50%">get back to living.</p></div>
+          <p class="at reveal" data-mode="thread" data-at="486" style="left:474vw;top:53vh;translate:-50% -50%;font-family:var(--serif);font-style:italic;font-weight:500;font-size:2.25rem;--reveal-delay:1s">repeat.</p>
+
+          <!-- chapter 5 · outro (510–570vw) -->
+          <div class="at reveal" style="left:512vw;top:18vh" data-at="516">
+            <p class="muted" style="font-size:1.125rem">enough thinking about it.</p>
+            <h2 class="d-display" style="margin-top:.75rem;max-width:30rem">start your free trial today.</h2>
+          </div>
+          <div class="at reveal" style="left:537vw;top:59vh;translate:1.5rem -50%" data-at="530">
+            <a class="btn btn-ink" href="#">start free trial <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile" id="mobile">
+      <svg class="m-thread" id="m-thread-svg" aria-hidden="true">
+        <path id="m-thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <circle id="m-thread-dot" r="4.5" cx="0" cy="0" style="opacity:0" fill="currentColor" />
+      </svg>
+      <div class="m-hero">
+        <svg class="m-scribble" id="m-scribble" aria-hidden="true" viewBox="250 100 550 600">
+          <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.058s;animation-delay:0.207s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M652 341 C736 176 676 270 595 393 C551 502 511 179 608 312 C612 397 708 447 616 375 C736 373 748 312 627 469 C552 479 478 362 535 275 C572 284 689 483 596 461" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.064s;animation-delay:0.325s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M566 565 C690 668 539 510 601 520 C501 495 679 640 594 488 C588 419 456 553 539 509 C654 369 727 177 651 357 C569 254 524 516 473 584 C434 629 437 615 543 528" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.073s;animation-delay:0.457s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M617 482 C541 668 630 423 525 561 C455 646 384 347 449 499 C539 470 700 212 622 354 C596 424 286 189 397 302 C446 458 674 337 547 482 C549 579 634 356 633 287" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.085s;animation-delay:0.608s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M661 443 C716 574 443 556 529 573 C594 538 432 461 514 588 C517 405 556 436 450 322 C505 459 612 520 577 556 C604 558 721 555 590 440 C525 596 458 425 392 320" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.104s;animation-delay:0.786s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M462 352 C597 406 484 646 429 547 C559 367 672 461 640 371 C574 334 357 135 479 238 C445 135 484 601 551 447 C565 450 754 442 661 416 C754 468 560 135 476 191" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.139s;animation-delay:1.008s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M510 212 C417 308 529 344 558 194 C625 135 578 668 446 536 C331 668 614 267 632 276 C754 178 412 653 405 488 C465 476 724 388 594 268 C622 135 486 278 453 295" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C569 524 619 135 569 199" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        <div class="m-note animate-reveal d220">
+          <svg aria-hidden="true" viewBox="0 0 40 30">
+            <path d="M38 4 C24 6 12 14 4 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            <path d="M4 24 L13 22 M4 24 L7 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <span>an almost accurate map of your head at 2am.</span>
+        </div>
+        <p class="m-anatomy animate-reveal d220">stop<br />overthinking.<br /><em>start doing.</em></p>
+        <span class="anchor" data-anchor style="left:86%;top:66svh"></span>
+        <span class="anchor" data-anchor style="left:93%;top:122svh"></span>
+      </div>
+      <div class="m-trades">
+        <div class="obj" style="left:3%;top:20px"><div class="figure sm" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:5%;top:190px"><div class="figure sm" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <span class="anchor" data-anchor style="left:95%;top:400px"></span>
+        <div class="center reveal">
+          <p class="muted">stuck in your head?</p>
+          <h2>we've all been there.</h2>
+          <p class="muted" style="margin-top:.25rem;font-size:.875rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
+        </div>
+        <span class="anchor" data-anchor style="left:95%;top:590px"></span>
+        <div class="obj" style="left:4%;top:630px"><div class="figure sm" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:3%;top:820px"><div class="figure sm" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:6%;top:1010px"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <span class="anchor" data-anchor style="left:4%;top:1260px"></span>
+        <div class="m-climber" id="m-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+        <span class="anchor" data-anchor style="left:96%;top:1300px"></span>
+      </div>
+
+      <div class="m-heart">
+        <span class="anchor" data-anchor style="left:5%;top:0"></span>
+        <span class="anchor" data-anchor style="left:5%;top:110px"></span>
+        <h2 class="reveal">so, meet<br />nudge.</h2>
+          <div class="m-love reveal">
+            <div class="fig-wrap"><div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float" style="animation-delay:0.0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <p class="title">a friend, not a coach.</p>
+            <p class="body">it calls you out (kindly) and helps you move forward.</p>
+            <span class="anchor" data-anchor style="left:-0.25rem;top:calc(100% + 0.75rem)"></span>
+          </div>
+          <div class="m-love reveal alt">
+            <div class="fig-wrap"><div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:0.5s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <p class="title">no productivity guilt.</p>
+            <p class="body">not hustle culture. not optimizing your life.</p>
+            <span class="anchor" data-anchor style="left:calc(100% + 0.25rem);top:calc(100% + 0.75rem)"></span>
+          </div>
+          <div class="m-love reveal">
+            <div class="fig-wrap"><div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1.0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <p class="title">fewer stories. more living.</p>
+            <p class="body">get unstuck from the stories we tell ourselves, and get back to your day.</p>
+            <span class="anchor" data-anchor style="left:-0.25rem;top:calc(100% + 0.75rem)"></span>
+          </div>
+      </div>
+
+      <div class="m-timeline" id="m-features">
+        <span class="anchor" data-anchor style="left:6%;top:-20px"></span>
+        <p class="lead reveal">a day<br /><span class="muted">with nudge.</span></p>
+        <ol>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>a gentle ping.</p><p class="line">a daily nudge notification checks in before the spiral starts.</p><p class="year">8:00 am · daily nudge</p></li>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>one tap. that's it.</p><p class="line">a quick mood check-in, right from your home screen widget.</p><p class="year">9:15 am · mood check-in</p></li>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>you spill it.</p><p class="line">23 tabs, one decision. nudge asks what you'd pick if you had to choose right now.</p><p class="year">11:40 am · the tab situation</p></li>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>22 tabs closed.</p><p class="line">the decision took four minutes. the drama took three weeks.</p><p class="year">11:52 am · one small step</p></li>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>it's all still there.</p><p class="line">what you were stuck on, and how you got unstuck.</p><p class="year">6:30 pm · conversation history</p></li>
+            <li class="reveal"><span class="pin" data-anchor></span><span class="tick" aria-hidden="true"></span><span class="pip" aria-hidden="true"></span><p>it remembers you.</p><p class="line">memory that learns about you, so the next nudge fits a little better.</p><p class="year">tomorrow · memory</p></li>
+        </ol>
+        <span class="anchor" data-anchor style="left:6%;top:100%"></span>
+      </div>
+
+      <div class="m-own">
+        <p class="big reveal"><span class="muted">turns out, it was never</span> that deep.</p>
+        <div class="small reveal">
+          <p>the decision was never the hard part.</p>
+          <p class="muted">the story we told ourselves about it was.</p>
+        </div>
+        <span class="anchor" data-anchor style="left:5%;top:calc(100% + 1rem)"></span>
+      </div>
+
+      <div class="m-loop" id="m-how">
+        <span class="anchor" data-anchor style="left:89%;top:-24px"></span>
+        <span class="anchor" data-anchor style="left:90%;top:150px"></span>
+        <p class="big reveal">how it works. <span class="muted">no hustle required.</span></p>
+        <div class="ring reveal">
+          <span class="anchor" data-anchor style="left:86%;top:205px"></span>
+          <span class="anchor" data-anchor="70" style="left:50%;top:230px"></span>
+          <span style="left:50%;top:230px;translate:-50% .75rem">share what's on your mind.</span>
+          <span style="left:calc(50% + 80px);top:160px;translate:0 -50%">get a fresh<br />perspective.</span>
+          <span style="left:50%;top:90px;translate:-50% calc(-100% - .6rem)">take one small step.</span>
+          <span style="left:calc(50% - 70px);top:160px;translate:calc(-100% - .6rem) -50%;text-align:right">get back<br />to living.</span>
+          <span class="repeat" style="left:50%;top:160px">repeat.</span>
+        </div>
+      </div>
+
+      <div class="m-cta" id="m-start">
+        <span class="anchor" data-anchor style="left:94%;top:40px"></span>
+        <p class="reveal muted" style="font-size:.875rem">enough thinking about it.</p>
+        <h2 class="reveal">start your free<br />trial today.</h2>
+        <div class="btn-wrap">
+          <span class="anchor" data-anchor style="left:calc(100% + 2.75rem);top:-.25rem"></span>
+          <span class="anchor" data-anchor style="left:100%;top:50%"></span>
+          <a class="btn btn-ink" href="#">start free trial <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+// Intro: page stays locked while the scribble draws, then unlocks after 2.6s
+// or on the first wheel / touch / key input.
+(() => {
+  const root = document.documentElement;
+  const header = document.getElementById('header');
+  const events = ['wheel', 'touchmove', 'keydown'];
+  root.style.overflow = 'hidden';
+  window.scrollTo(0, 0);
+  const unlock = () => {
+    root.style.overflow = '';
+    header.classList.remove('intro', 'animate-reveal');
+    document.getElementById('m-thread-svg').classList.add('on');
+    document.querySelectorAll('.hero .animate-reveal, .mobile .animate-reveal').forEach(el => el.classList.remove('animate-reveal'));
+    clearTimeout(timer);
+    events.forEach(e => window.removeEventListener(e, unlock));
+  };
+  const timer = setTimeout(unlock, 2600);
+  events.forEach(e => window.addEventListener(e, unlock, { passive: true }));
+  const menuBtn = document.getElementById('menu-btn'), menu = document.getElementById('menu');
+  const setMenu = open => {
+    menu.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+  menuBtn.addEventListener('click', () => setMenu(menu.hidden));
+  // [track position in vw, mobile section id] for each nav target.
+  const GO = { brain: [0, 'brain'], features: [298, 'm-features'], how: [412, 'm-how'], start: [470, 'm-start'] };
+  document.querySelectorAll('[data-go]').forEach(b =>
+    b.addEventListener('click', () => {
+      const [vw, id] = GO[b.dataset.go];
+      if (innerWidth >= 768) {
+        const s = document.getElementById('brain');
+        scrollTo({ top: s.offsetTop + (s.offsetHeight - innerHeight) * vw / 470, behavior: 'smooth' });
+      } else document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      setMenu(false);
+    }));
+})();
+
+// Horizontal story: vertical scroll through #brain slides the track left,
+// and the thread unrolls out of the scribble with a dot riding its tip.
+(() => {
+  const TRACK_VW = 570, TRAVEL_VW = 470;   // track width / distance it travels
+  const LEAD = .55, EASE = .085;           // thread tip leads at 55% of the screen; smoothing factor
+  // Thread waypoints in vw / vh units: [x, y, loop?] — a third value draws a small loop.
+  const POINTS = [[56.9,19.9],[80,58],[98,50],[110,44,8],[120,66],[132,68],[142,66,-6],[151,56],[156,40],[164,29],[171,33],[174.5,35.6],[181,42],[186,62],[198,68],[205,68],[216,50],[229,34],[233,50],[250,58],[262,70],[272,88],[292,54],[304,48],[322,51],[340,52],[358,50],[376,46],[394,43],[410,46],[422,60],[440,70],[458,71],[474,70,17],[496,76],[514,78],[528,70],[537,59]];
+
+  // Catmull-Rom through the waypoints -> cubic bezier segments.
+  const toSegments = (pts, scale = 10, squash = 1.8) => {
+    const r = [];
+    for (const [px, py, loop] of pts) {
+      const x = px * scale, y = py * scale;
+      r.push([x, y]);
+      if (loop) {
+        const h = loop * scale, w = Math.abs(h) / squash;
+        r.push([x + w, y - h], [x, y - 2 * h], [x - w, y - h], [x + w * .5, y + h * .15]);
+      }
+    }
+    const segs = [];
+    for (let i = 0; i < r.length - 1; i++) {
+      const p0 = r[i - 1] ?? r[i], p1 = r[i], p2 = r[i + 1], p3 = r[i + 2] ?? p2;
+      segs.push([p1[0], p1[1], p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6,
+        p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6, p2[0], p2[1]]);
+    }
+    return segs;
+  };
+  const toPath = segs => {
+    const f = n => n.toFixed(1);
+    let d = `M${segs[0][0]} ${segs[0][1]}`;
+    for (const [, , a, b, c, e, g, h] of segs) d += ` C${f(a)} ${f(b)} ${f(c)} ${f(e)} ${f(g)} ${f(h)}`;
+    return d;
+  };
+  // Sample the curve so we can map an x position to a length along the path.
+  const sample = (segs, steps = 48) => {
+    const n = segs.length * steps + 1, xs = new Float32Array(n), ys = new Float32Array(n), lens = new Float32Array(n);
+    let k = 0, total = 0;
+    segs.forEach(([x0, y0, c1x, c1y, c2x, c2y, x1, y1], si) => {
+      for (let s = si === 0 ? 0 : 1; s <= steps; s++) {
+        const t = s / steps, u = 1 - t;
+        const x = u*u*u*x0 + 3*u*u*t*c1x + 3*u*t*t*c2x + t*t*t*x1;
+        const y = u*u*u*y0 + 3*u*u*t*c1y + 3*u*t*t*c2y + t*t*t*y1;
+        if (k > 0) total += Math.hypot(x - xs[k - 1], y - ys[k - 1]);
+        xs[k] = x; ys[k] = y; lens[k] = total; k++;
+      }
+    });
+    return { xs, ys, lens, total };
+  };
+
+  const segs = toSegments(POINTS);
+  const thread = document.getElementById('thread');
+  const dot = document.getElementById('thread-dot');
+  thread.setAttribute('d', toPath(segs));
+  const { xs, ys, lens, total } = sample(segs);
+  const last = xs.length - 1;
+
+  const drawThread = p => {
+    const tail = Math.max(0, (p - .9) / .1) * 150;          // finish the last stretch at the very end
+    const tipX = p * TRAVEL_VW * 10 + LEAD * 1000 + tail;
+    let i = 0;
+    while (i < last && xs[i] < tipX) i++;
+    const len = lens[i] ?? total;
+    thread.style.strokeDashoffset = `${1 - len / total}`;
+    dot.setAttribute('cx', xs[i]);
+    dot.setAttribute('cy', ys[i]);
+    dot.style.opacity = len <= 0 || len >= total * .999 ? '0' : '1';
+  };
+
+  const section = document.getElementById('brain');
+  const track = document.getElementById('track');
+  // Desktop pieces fade in as the screen (or the thread tip, for data-mode="thread") reaches their data-at (vw).
+  const atEls = [...track.querySelectorAll('[data-at]')];
+  const revealDesktop = shift => {
+    for (const el of atEls) {
+      const edge = el.dataset.mode === 'thread' ? shift + LEAD * 100 : shift + 96;
+      el.toggleAttribute('data-shown', edge >= +el.dataset.at);
+    }
+  };
+  let current = -1;
+  const tick = () => {
+    const range = Math.max(section.offsetHeight - innerHeight, 1);
+    const target = Math.min(1, Math.max(0, (scrollY - section.offsetTop) / range));
+    const next = current < 0 || Math.abs(target - current) < 5e-5 ? target : current + (target - current) * EASE;
+    if (next !== current) {
+      current = next;
+      if (innerWidth >= 768) {
+        track.style.transform = `translate3d(-${current * TRAVEL_VW}vw,0,0)`;
+        revealDesktop(current * TRAVEL_VW);
+      }
+      drawThread(current);
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+
+  // Mobile: thread starts at the scribble's loose end and runs through the
+  // [data-anchor] points; it draws down as the page scrolls.
+  const mobile = document.getElementById('mobile');
+  const mSvg = document.getElementById('m-thread-svg');
+  const mThread = document.getElementById('m-thread');
+  const mDot = document.getElementById('m-thread-dot');
+  const scribble = document.getElementById('m-scribble');
+  let mSamples = null;
+  const layoutMobile = () => {
+    if (mobile.offsetParent === null) return;
+    const box = mobile.getBoundingClientRect(), sb = scribble.getBoundingClientRect();
+    const k = Math.min(sb.width / 550, sb.height / 600);  // viewBox 250 100 550 600, scribble end at (569,199)
+    const pts = [[sb.left - box.left + (sb.width - 550 * k) / 2 + 319 * k, sb.top - box.top + (sb.height - 600 * k) / 2 + 99 * k]];
+    mobile.querySelectorAll('[data-anchor]').forEach(a => {
+      const r = a.getBoundingClientRect(), loop = Number(a.dataset.anchor);
+      pts.push(loop ? [r.left - box.left, r.top - box.top, loop] : [r.left - box.left, r.top - box.top]);
+    });
+    const mSegs = toSegments(pts, 1, 1);
+    mSamples = sample(mSegs, 24);
+    mThread.setAttribute('d', toPath(mSegs));
+    mSvg.setAttribute('width', box.width);
+    mSvg.setAttribute('height', box.height);
+    mSvg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+    drawMobile();
+  };
+  const drawMobile = () => {
+    if (!mSamples) return;
+    const { xs, ys, lens, total } = mSamples;
+    const top = mobile.getBoundingClientRect().top;
+    const tipY = Math.min(innerHeight * .7 - top, ys[0] + Math.max(0, -top) * 1.4);
+    let i = 0;
+    while (i < xs.length - 1 && ys[i] < tipY) i++;
+    const len = lens[i] ?? 0;
+    mThread.style.strokeDashoffset = `${1 - len / total}`;
+    mDot.setAttribute('cx', xs[i]);
+    mDot.setAttribute('cy', ys[i]);
+    mDot.style.opacity = len > 0 && len < total * .999 ? '1' : '0';
+  };
+  // Climber hangs on the thread; drag it sideways to slide it along.
+  const climber = document.getElementById('m-climber');
+  const CLIMB_TOP = 1260;
+  let climbT = .55;
+  const restClimber = () => {
+    climber.style.left = `${climbT * 100}%`;
+    climber.style.top = `${CLIMB_TOP + 40 * climbT + Math.sin(climbT * Math.PI) * 14}px`;
+  };
+  restClimber();
+  const climbTo = clientX => {
+    const block = climber.parentElement, r = block.getBoundingClientRect();
+    if (!mSamples) return;
+    const want = Math.min(r.width * .84, Math.max(r.width * .2, clientX - r.left));
+    const { xs, ys } = mSamples, top = block.offsetTop;
+    let best = -1;
+    for (let i = 0; i < xs.length; i++) {
+      const y = ys[i] - top, x = xs[i];
+      if (y < 1170 || y > 1390 || x < r.width * .2 || x > r.width * .84) continue;
+      if (best < 0 || Math.abs(x - want) < Math.abs(xs[best] - want)) best = i;
+    }
+    if (best < 0) return;
+    climbT = xs[best] / r.width;
+    climber.style.left = `${xs[best]}px`;
+    climber.style.top = `${ys[best] - top}px`;
+  };
+  const climbFloat = climber.querySelector('.float'), climbBubble = climber.querySelector('.bubble');
+  climbFloat.classList.add('hang');
+  const climbLabel = () => {
+    climbBubble.classList.toggle('left', climbT < .35);
+    climbBubble.classList.toggle('right', climbT > .65);
+  };
+  climber.addEventListener('pointerdown', e => {
+    climber.setPointerCapture(e.pointerId);
+    climber.classList.add('dragging');
+    climbFloat.classList.replace('hang', 'still');
+  });
+  climber.addEventListener('pointermove', e => { if (climber.classList.contains('dragging')) { climbTo(e.clientX); climbLabel(); } });
+  const climbEnd = () => { climber.classList.remove('dragging'); climbFloat.classList.replace('still', 'hang'); };
+  climber.addEventListener('pointerup', climbEnd);
+  climber.addEventListener('pointercancel', climbEnd);
+
+  // Fade story pieces in as they scroll into view.
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    if (en.isIntersecting) { en.target.setAttribute('data-shown', ''); io.unobserve(en.target); }
+  }), { rootMargin: '0px 0px -8% 0px', threshold: .15 });
+  mobile.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  let raf = 0;
+  addEventListener('scroll', () => { raf ||= requestAnimationFrame(() => { raf = 0; drawMobile(); }); }, { passive: true });
+  addEventListener('resize', layoutMobile);
+  layoutMobile();
+  document.fonts?.ready.then(layoutMobile);
+})();
+
+// Floating objects: tilt toward the pointer, and type out their label in a
+// speech bubble on hover (tap on touch screens). Only one bubble open at a time.
+(() => {
+  let openFig = null;
+  const close = fig => {
+    fig.classList.remove('open');
+    clearInterval(fig._typing);
+    fig.querySelector('.bubble span').textContent = '';
+    if (openFig === fig) openFig = null;
+  };
+  const open = fig => {
+    if (openFig && openFig !== fig) close(openFig);
+    openFig = fig;
+    const bubble = fig.querySelector('.bubble'), text = fig.dataset.label, out = bubble.querySelector('span');
+    if (innerWidth < 768 && !fig.parentElement.classList.contains('m-climber')) {
+      const r = fig.getBoundingClientRect(), mid = r.left + r.width / 2;
+      bubble.classList.toggle('left', mid < 140);
+      bubble.classList.toggle('right', mid > innerWidth - 140);
+    }
+    fig.classList.add('open');
+    clearInterval(fig._typing);
+    let n = 0;
+    out.textContent = '';
+    fig._typing = setInterval(() => { out.textContent = text.slice(0, ++n); if (n >= text.length) clearInterval(fig._typing); }, 26);
+  };
+  document.querySelectorAll('.figure').forEach(fig => {
+    const img = fig.querySelector('img');
+    const tilt = (x, y) => {
+      img.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 14}deg) scale(${fig.classList.contains('open') ? 1.08 : 1}) translateZ(0)`;
+    };
+    fig.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') { open(fig); tilt(0, 0); } });
+    fig.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') { close(fig); tilt(0, 0); } });
+    fig.addEventListener('pointermove', e => {
+      const r = fig.getBoundingClientRect();
+      tilt(((e.clientX - r.left) / r.width - .5) * 2, ((e.clientY - r.top) / r.height - .5) * 2);
+    });
+    fig.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch') return;
+      open(fig);
+      clearTimeout(fig._hide);
+      fig._hide = setTimeout(() => close(fig), 2500);
+    });
+  });
+  addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch' && openFig && !openFig.contains(e.target)) close(openFig);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alex — developer &amp; restless builder</title>
+<meta name="description" content="A scroll-led portfolio template: a horizontal story, a thread that draws itself, and a talking cursor." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:ital,wght@0,500;1,500&family=Patrick+Hand&display=swap" />
+<style>
+:root{
+  --background:oklch(97.5% .003 85);
+  --foreground:oklch(13% .005 70);
+  --muted:oklch(93.5% .004 85);
+  --muted-foreground:oklch(53% .008 70);
+  --border:oklch(78% .005 70);
+  --cursor:oklch(64% .2 252);
+  --cursor-foreground:oklch(99% 0 0);
+  --cursor-border:oklch(53% .22 252);
+  --sans:"DM Sans",sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --hand:"Patrick Hand",cursive;
+  --ease-out:cubic-bezier(.22,.7,.2,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto;-webkit-text-size-adjust:100%}
+body{background:var(--background);color:var(--foreground);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,svg{display:block}
+.serif{font-family:var(--serif);font-weight:500}
+.italic{font-style:italic}
+.hand{font-family:var(--hand)}
+.muted{color:var(--muted-foreground)}
+::selection{background:var(--cursor);color:var(--cursor-foreground)}
+
+/* ---------- motion primitives ---------- */
+@keyframes reveal{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes float-object{0%,to{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes hang{0%,to{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes nudge-scroll{0%,to{transform:translateY(0)}50%{transform:translateY(7px)}}
+@keyframes blink{50%{opacity:.3}}
+@keyframes twinkle{0%,to{opacity:.25}50%{opacity:.95}}
+.animate-reveal{animation:.7s var(--ease-out) both reveal}
+.reveal{transition:opacity .9s ease-out,filter .9s ease-out,transform .9s var(--ease-out);transition-delay:var(--reveal-delay,0s)}
+.reveal:not([data-shown]){opacity:0;filter:blur(12px);transform:translateY(.5rem);transition-delay:0s}
+.locked .intro-hide{opacity:0}
+
+/* ---------- buttons & links ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;height:2.5rem;padding:0 1rem;border:1px solid var(--foreground);font-size:.875rem;font-weight:500;transition:background-color .2s,color .2s,transform .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn-paper{background:var(--background)}
+.btn-paper:hover{background:var(--muted)}
+.btn-ink{background:var(--foreground);color:var(--background)}
+.btn-ink:hover{background:color-mix(in oklch,var(--foreground) 85%,transparent)}
+.btn-icon{width:2.5rem;padding:0}
+.btn[aria-pressed="true"]{background:var(--foreground);color:var(--background)}
+.story-link{position:relative}
+.story-link::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease-out)}
+.story-link:hover::after{transform:scaleX(1);transform-origin:left}
+
+/* ---------- header ---------- */
+header{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:1.25rem;transition:background-color .5s,opacity .7s}
+header.solid{background:var(--background)}
+.locked header{pointer-events:none}
+header .logo{font-family:var(--serif);font-weight:500;font-size:1.875rem;width:fit-content}
+header nav{display:none;gap:1.75rem;font-size:.875rem;font-weight:500;align-items:center}
+.burger{position:relative;width:2.5rem;height:2.5rem}
+.burger span{position:absolute;left:50%;top:50%;height:2px;width:1.75rem;border-radius:9px;background:var(--foreground);transition:transform .3s}
+.burger span:first-child{transform:translate(-50%,-5px)}
+.burger span:last-child{transform:translate(-50%,4px)}
+.menu-open .burger span:first-child{transform:translate(-50%,0) rotate(45deg)}
+.menu-open .burger span:last-child{transform:translate(-50%,0) rotate(-45deg)}
+.mobile-menu{position:fixed;inset:0;z-index:45;background:var(--background);display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:2rem;font-family:var(--serif);font-size:3rem;opacity:0;pointer-events:none;transition:opacity .35s}
+.menu-open .mobile-menu{opacity:1;pointer-events:auto}
+.mobile-menu > *{text-align:left}
+@media(min-width:640px){header{padding:1.75rem 2rem}}
+@media(min-width:768px){header nav{display:flex}.burger,.mobile-menu{display:none}}
+
+/* ---------- story (desktop: horizontal) ---------- */
+#brain{position:relative}
+.story-desktop{display:none}
+@media(min-width:768px){
+  #brain{height:720vh}
+  .story-desktop{display:block;position:sticky;top:0;height:100vh;overflow:hidden}
+}
+.track{position:relative;height:100%;width:570vw;will-change:transform}
+.thread{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.thread path{fill:none;stroke:var(--foreground);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.pen{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--foreground);opacity:0;transition:opacity .4s;z-index:5;pointer-events:none}
+.layer{position:absolute;inset:0;z-index:10}
+.at{position:absolute}
+
+.hero-title{font-size:3rem;font-weight:600;line-height:.95}
+.h-display{font-family:var(--serif);font-weight:500;font-size:3.75rem;line-height:1.1}
+.h-big{font-family:var(--serif);font-weight:500;font-size:2.25rem;line-height:1.15}
+
+/* floating "3D" objects (swap the emoji for your own renders) */
+.obj{position:relative;width:9rem;height:9rem;perspective:900px;flex-shrink:0}
+@media(min-width:1024px){.obj{width:11rem;height:11rem}}
+.obj.sm{width:7rem;height:7rem}
+.obj .shadow{position:absolute;bottom:6%;left:50%;height:1rem;width:50%;border-radius:50%;background:color-mix(in oklch,var(--foreground) 20%,transparent);filter:blur(10px);transform:translateX(-50%);transition:transform .5s,opacity .5s}
+.obj .float{width:100%;height:100%;animation:float-object 6s ease-in-out infinite}
+.obj .art{width:100%;height:100%;display:grid;place-items:center;font-size:6.2rem;line-height:1;user-select:none;transition:transform .5s var(--spring);filter:drop-shadow(0 18px 18px rgb(0 0 0/.14))}
+.obj.sm .art{font-size:4.5rem}
+.obj:hover .shadow{transform:translateX(-50%) scale(.8);opacity:.6}
+.bubble{position:absolute;z-index:40;width:max-content;max-width:min(16rem,calc(100vw - 2rem));white-space:pre-line;border-radius:18px 18px 18px 5px;border:1px solid var(--cursor-border);background:var(--cursor);color:var(--cursor-foreground);padding:.5rem 1rem;font-size:.875rem;box-shadow:0 10px 25px rgb(0 0 0/.15);transition:all .3s var(--spring);pointer-events:none}
+.obj .bubble{left:50%;bottom:calc(100% + 4px);transform:translate(-50%,.75rem) scale(.9);opacity:0}
+.obj:hover .bubble{transform:translate(-50%,0) scale(1);opacity:1}
+
+/* hanging climber */
+.hanger{position:absolute;width:9vw;height:18vh;transform-origin:57% 0;animation:hang 3.2s ease-in-out infinite;pointer-events:auto}
+.hanger .rope{position:absolute;left:57%;top:0;width:2px;height:40%;background:var(--foreground)}
+.hanger .art{position:absolute;left:57%;top:34%;transform:translateX(-50%);font-size:4.8rem;line-height:1}
+.hanger .bubble{left:57%;top:-2.6rem;transform:translate(-20%,.5rem) scale(.9);opacity:0}
+.hanger:hover .bubble{transform:translate(-20%,0) scale(1);opacity:1}
+
+/* timeline */
+.tick{position:absolute;width:1px;background:color-mix(in oklch,var(--muted-foreground) 60%,transparent)}
+.knot{position:absolute;width:.5rem;height:.5rem;margin:-.25rem 0 0 -.25rem;border-radius:50%;background:var(--foreground)}
+.tl-card{position:absolute;width:15vw;transform:translateX(-.5rem)}
+.tl-card .yr{font-size:.75rem;color:var(--muted-foreground)}
+.tl-card .t{font-family:var(--serif);font-size:1.4rem;line-height:1.15}
+.tl-card .b{font-size:.85rem;color:var(--muted-foreground);line-height:1.35;margin-top:.15rem}
+
+/* loop */
+.loop-dot{position:absolute;width:.75rem;height:.75rem;transform:translate(-50%,-50%);border-radius:50%;background:var(--foreground)}
+.loop-lbl{position:absolute;white-space:nowrap;font-size:1.125rem}
+
+.scroll-hint{position:absolute;left:50%;bottom:1.5rem;font-size:.75rem;color:var(--muted-foreground);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.35rem}
+.scroll-hint i{display:block;width:1px;height:1.5rem;background:currentColor;animation:nudge-scroll 1.6s ease-in-out infinite}
+
+/* ---------- story (mobile: vertical) ---------- */
+@media(min-width:768px){.story-mobile{display:none!important}}
+.story-mobile{padding:6rem 1.25rem 5rem;display:flex;flex-direction:column;gap:4.5rem;position:relative}
+.story-mobile .m-hero{min-height:calc(100svh - 8rem);display:flex;flex-direction:column;justify-content:flex-end;gap:1.25rem}
+.story-mobile .m-hero .hero-title{font-size:2.6rem}
+.story-mobile .row{display:flex;align-items:center;gap:1rem}
+.story-mobile .objs{display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem}
+.story-mobile .mtl{border-left:1px solid color-mix(in oklch,var(--muted-foreground) 60%,transparent);margin-left:.4rem;padding-left:1.1rem;display:flex;flex-direction:column;gap:1.4rem}
+.story-mobile .mtl > div{position:relative}
+.story-mobile .mtl > div::before{content:"";position:absolute;left:-1.42rem;top:.55rem;width:.4rem;height:.4rem;border-radius:50%;background:var(--muted-foreground)}
+.m-loop{position:relative;width:15rem;height:15rem;margin:0 auto;border:2px solid var(--foreground);border-radius:50%}
+.m-loop span{position:absolute;font-size:.875rem;white-space:nowrap}
+
+/* ---------- work ---------- */
+#work{position:relative;min-height:100vh;border-top:1px solid var(--foreground);padding:7rem 1.25rem 6rem;overflow:hidden}
+.works-bg{position:absolute;left:0;right:0;top:0;overflow:hidden;pointer-events:none;user-select:none}
+.works-bg p{transform:translateY(-38%);white-space:nowrap;font-size:26vw;font-weight:600;line-height:1;color:var(--muted);text-align:center}
+.work-grid{position:relative;display:grid;gap:3.5rem;max-width:90rem;margin:0 auto}
+@media(min-width:640px){#work{padding-left:2rem;padding-right:2rem}}
+@media(min-width:1024px){.work-grid{grid-template-columns:minmax(0,22rem) minmax(0,1fr);gap:5rem}.work-intro{position:sticky;top:7rem;align-self:start}}
+.work-intro h2{font-family:var(--serif);font-weight:500;font-size:3rem;line-height:1;margin-top:1rem;max-width:28rem}
+@media(min-width:640px){.work-intro h2{font-size:3.75rem}}
+.filters{display:flex;flex-wrap:wrap;gap:.5rem}
+.projects{display:grid;gap:4rem}
+@media(min-width:900px){.projects{grid-template-columns:1fr 1fr;gap:4rem 2.5rem}.projects article:first-child{grid-column:1/-1}}
+.projects article{transition:opacity .4s}
+.projects article[hidden]{display:none}
+.shot{display:block;overflow:hidden;border:1px solid var(--border);background:var(--muted)}
+.shot .img{aspect-ratio:4/3;transition:transform .7s ease-out;position:relative;display:grid;place-items:center;overflow:hidden}
+.projects article:hover .shot .img{transform:scale(1.025)}
+.mock{width:78%;aspect-ratio:16/10;border-radius:10px;background:#fff;box-shadow:0 30px 60px -20px rgb(0 0 0/.35);overflow:hidden;display:flex;flex-direction:column}
+.mock .bar{height:1.4rem;background:#eee;display:flex;gap:.3rem;align-items:center;padding-left:.6rem}
+.mock .bar i{width:.45rem;height:.45rem;border-radius:50%;background:#d0d0d0}
+.mock .body{flex:1;padding:8%;display:flex;flex-direction:column;gap:.6rem;justify-content:center}
+.mock .body b{font-family:var(--serif);font-weight:500;font-size:clamp(1.2rem,3vw,2.4rem);line-height:1}
+.mock .body span{height:.5rem;border-radius:9px;background:#e8e8e8}
+.meta{margin-top:1.25rem;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1.25rem;align-items:start}
+.meta h3{font-family:var(--serif);font-weight:500;font-size:2.25rem;margin-top:.25rem;line-height:1.1}
+.more{margin-top:5rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:2.5rem;grid-column:1/-1}
+.pill{display:inline-flex;min-width:13.5rem;align-items:center;justify-content:center;gap:.75rem;border-radius:999px;border:1px solid var(--foreground);height:3rem;padding:0 1.5rem;font-size:.9rem;font-weight:500;transition:background-color .25s,color .25s}
+.pill:hover{background:var(--foreground);color:var(--background)}
+.pill .arr{transition:transform .3s}
+.pill:hover .arr{transform:translateX(4px)}
+
+/* ---------- hi ---------- */
+#hi{position:relative;min-height:100vh;overflow:hidden;border-top:1px solid var(--border);padding:7rem 1.25rem 2.5rem}
+@media(min-width:640px){#hi{padding-left:2rem;padding-right:2rem}}
+.hi-grid{display:grid;gap:3rem;align-items:center;max-width:90rem;margin:0 auto}
+@media(min-width:900px){#hi{height:100vh;min-height:44rem}.hi-grid{grid-template-columns:1fr 1fr;height:100%}}
+.photo-wrap{position:relative;height:62vh;min-height:22rem;display:grid;place-items:center}
+.photo{position:relative;height:100%;aspect-ratio:3/4;cursor:grab;touch-action:none;user-select:none;transition:transform .5s var(--spring)}
+.photo.dragging{cursor:grabbing;transition:none}
+.photo svg{width:100%;height:100%;filter:drop-shadow(0 25px 30px rgb(0 0 0/.18))}
+.note{font-family:var(--hand);font-size:1.05rem;line-height:1.3;letter-spacing:.08em;color:color-mix(in oklch,var(--foreground) 75%,transparent);width:9rem;position:absolute}
+.note svg{width:3.5rem;height:2.5rem;margin-top:.2rem;color:var(--foreground);opacity:.7}
+.hi-copy h2{font-family:var(--serif);font-weight:500;font-size:clamp(3.5rem,6.6vw,7.5rem);line-height:.9;letter-spacing:-.01em}
+.hi-copy .sub{margin-top:1rem;font-size:clamp(1.05rem,1.25vw,1.35rem);line-height:1.2;color:var(--muted-foreground)}
+.hi-copy .cta{margin-top:1.75rem;font-family:var(--serif);font-weight:500;font-size:clamp(1.75rem,2.75vw,3rem);line-height:1.08}
+.links{margin-top:2rem;display:flex;flex-direction:column;max-width:28rem;border-top:1px solid var(--border)}
+.links a{display:flex;align-items:center;justify-content:space-between;gap:2.5rem;border-radius:.75rem;padding:0 1.25rem;height:3.4rem;font-size:1.05rem;transition:background-color .25s,padding .25s}
+.links a:hover{background:var(--muted);padding-left:1.6rem}
+.links a span:last-child{transition:transform .3s}
+.links a:hover span:last-child{transform:translate(3px,-3px)}
+.fun{position:relative;margin-top:2.5rem;display:flex;align-items:center;gap:1rem}
+.fun .note{position:static}
+.foot{margin-top:2.5rem;font-size:.75rem;color:color-mix(in oklch,var(--muted-foreground) 70%,transparent)}
+@media(min-width:900px){.foot{position:absolute;left:2rem;bottom:1.5rem;margin:0}}
+
+/* ---------- talking cursor ---------- */
+.cursor{position:fixed;left:0;top:0;z-index:100;pointer-events:none;opacity:0;transition:opacity .3s}
+.cursor.on{opacity:1}
+.cursor .arrow{width:22px;height:22px;filter:drop-shadow(0 2px 3px rgb(0 0 0/.2))}
+.cursor .bubble{position:absolute;left:18px;top:20px;transform-origin:0 0;transform:scale(.6);opacity:0}
+.cursor .bubble.show{transform:none;opacity:1}
+.cursor .caret{animation:blink 1s steps(1) infinite}
+@media (pointer:fine){html.has-cursor,html.has-cursor *{cursor:none!important}}
+@media (pointer:coarse){.cursor{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal:not([data-shown]){opacity:1;filter:none;transform:none}}
+</style>
+</head>
+<body class="locked">
+
+<!-- =================================== HEADER =================================== -->
+<header id="hdr" class="intro-hide">
+  <button class="logo" data-go="brain" aria-label="Back to introduction">Alex</button>
+  <nav aria-label="Main navigation">
+    <button class="story-link" data-go="brain">brain</button>
+    <button class="story-link" data-go="work">work</button>
+    <a class="story-link" href="#" target="_blank" rel="noreferrer" data-cursor="the polished version.">linkedin</a>
+    <button class="story-link" data-go="hi" data-cursor="say hello?">let's talk</button>
+  </nav>
+  <button class="burger" aria-label="Open menu" id="burger"><span></span><span></span></button>
+</header>
+<div class="mobile-menu" id="mmenu">
+  <button data-go="brain">brain</button>
+  <button data-go="work">work</button>
+  <a href="#" target="_blank" rel="noreferrer">linkedin</a>
+  <button data-go="hi">let's talk</button>
+</div>
+
+<main>
+<!-- =================================== STORY =================================== -->
+<section id="brain">
+  <!-- desktop: horizontal track -->
+  <div class="story-desktop">
+    <div class="track" id="track">
+      <svg class="thread" id="threadSvg" aria-hidden="true">
+        <path id="threadPath"></path>
+      </svg>
+      <div class="pen" id="pen"></div>
+
+      <div class="layer" id="layer">
+        <!-- chapter 0 · intro (0–100vw) -->
+        <div class="at intro-hide" style="left:2rem;bottom:2.5rem" data-intro="2.2">
+          <p class="hero-title">the<br />field notes of a<br /><span class="serif italic">restless builder.</span></p>
+        </div>
+        <div class="at intro-hide muted" style="left:62vw;top:7rem;max-width:14rem;display:flex;gap:.5rem;font-size:.875rem" data-intro="2.2">
+          <svg viewBox="0 0 40 30" style="width:2rem;height:1.5rem;flex-shrink:0;margin-top:.25rem" aria-hidden="true"><path d="M38 4 C24 2 10 8 5 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M2 17 L5 25 L12 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span>a mostly honest map of whatever is on my mind.</span>
+        </div>
+        <div class="at intro-hide" style="right:calc(470vw + 2rem);bottom:2rem;text-align:right" data-intro="2.35">
+          <p style="font-size:.875rem;margin-bottom:1rem">or, simply: hi, this is my portfolio :)</p>
+          <a href="#work" class="btn btn-paper" data-go="work" style="margin-right:.5rem">view work</a>
+          <a href="#hi" class="btn btn-ink" data-go="hi" data-cursor="i'm friendly, promise.">let's talk</a>
+        </div>
+        <div class="scroll-hint intro-hide" style="left:50vw" data-intro="2.6"><span>scroll</span><i></i></div>
+
+        <!-- chapter 1 · generalist (100–175vw) -->
+        <span hidden data-mode="thread" data-at="112" data-say="watch your step. rabbit holes ahead."></span>
+        <div class="at reveal" style="left:120vw;top:42vh;width:38vw;text-align:center" data-at="122">
+          <p class="muted" style="font-size:1.125rem">i poke at a lot of things.</p>
+          <h2 class="h-display" style="white-space:nowrap">a generalist by accident</h2>
+          <p class="muted" style="font-size:1.125rem;margin-top:.5rem">which is a polite way of saying i get distracted.</p>
+        </div>
+        <div class="at" style="left:106vw;top:19vh"><div class="obj"><div class="shadow"></div><div class="float"><div class="art" role="img" aria-label="a laptop">💻</div></div><div class="bubble">where most things begin.</div></div></div>
+        <div class="at" style="left:104vw;top:60vh"><div class="obj"><div class="shadow"></div><div class="float" style="animation-delay:.6s"><div class="art" role="img" aria-label="a camera">📷</div></div><div class="bubble">film, mostly. and patience.</div></div></div>
+        <div class="at" style="left:124vw;top:68vh"><div class="obj"><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><div class="art" role="img" aria-label="a cat">🐈</div></div><div class="bubble">the actual boss of the house.</div></div></div>
+        <div class="at" style="left:136vw;top:18vh"><div class="obj"><div class="shadow"></div><div class="float" style="animation-delay:.3s"><div class="art" role="img" aria-label="a keyboard">⌨️</div></div><div class="bubble">clack. clack. clack.</div></div></div>
+        <div class="at" style="left:150vw;top:68vh"><div class="obj sm"><div class="shadow"></div><div class="float" style="animation-delay:1.5s"><div class="art" role="img" aria-label="a badminton racket">🏸</div></div><div class="bubble">rematch this weekend?</div></div></div>
+        <div class="hanger" id="hanger"><div class="rope"></div><div class="art" role="img" aria-label="a climber hanging on the thread">🧗</div><div class="bubble">just hanging on. as usual.</div></div>
+
+        <!-- chapter 2 · the few things (180–270vw) -->
+        <span hidden data-mode="thread" data-at="184" data-say="okay. the sincere part."></span>
+        <div class="at reveal" style="left:181vw;top:18vh;width:22rem" data-at="182">
+          <h2 class="h-display" style="line-height:1">but only a few things really stuck.</h2>
+        </div>
+        <div class="at reveal" style="left:200vw;top:56vh;display:flex;align-items:center;gap:1.25rem" data-at="202">
+          <div class="obj"><div class="shadow"></div><div class="float"><div class="art" role="img" aria-label="a globe">🌍</div></div><div class="bubble">no single owner. i love that.</div></div>
+          <div style="max-width:17rem"><p class="h-big">the open web, first.</p><p class="muted" style="margin-top:.5rem">fascinated by networks that nobody gets to own.</p></div>
+        </div>
+        <div class="at reveal" style="left:224vw;top:22vh;display:flex;align-items:center;gap:1.25rem" data-at="226">
+          <div class="obj"><div class="shadow"></div><div class="float" style="animation-delay:.6s"><div class="art" role="img" aria-label="headphones">🎧</div></div><div class="bubble">listening is underrated.</div></div>
+          <div style="max-width:17rem"><p class="h-big">then, people.</p><p class="muted" style="margin-top:.5rem">teaching turned out to be the fun part.</p></div>
+        </div>
+        <div class="at reveal" style="left:260vw;top:60vh;display:flex;align-items:center;gap:1.25rem" data-at="262">
+          <div class="obj"><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><div class="art" role="img" aria-label="a brain">🧠</div></div><div class="bubble">still figuring this one out.</div></div>
+          <div style="max-width:17rem"><p class="h-big">and these days, AI.</p><p class="muted" style="margin-top:.5rem">part engineer, part “huh, what if…?”</p></div>
+        </div>
+
+        <!-- chapter 3 · timeline (300–400vw) — ticks are generated in JS -->
+        <span hidden data-mode="thread" data-at="306" data-say="the short version. very short."></span>
+        <div id="timeline"></div>
+        <div class="at reveal" style="left:302vw;top:84vh" data-at="302">
+          <p class="serif" style="font-size:3rem;white-space:nowrap;line-height:1">somehow, <span class="muted">i keep ending up…</span></p>
+        </div>
+        <div class="at reveal" style="left:346vw;top:84vh" data-at="346">
+          <p class="serif" style="font-size:3rem;white-space:nowrap;line-height:1"><span class="muted">…</span>looking after things.</p>
+        </div>
+        <div class="at reveal" style="left:380vw;top:76vh;max-width:22rem" data-at="380">
+          <p>if i got curious about it, i built it.</p>
+          <p class="muted">if i built it, i stuck around to maintain it.</p>
+        </div>
+
+        <!-- chapter 4 · the loop (420–490vw) -->
+        <span hidden data-mode="thread" data-at="430" data-say="here's the pattern."></span>
+        <div class="at reveal" style="left:418vw;top:22vh;width:26rem" data-at="428">
+          <p class="serif" style="font-size:3.75rem;line-height:1.05">apparently, <span class="muted">i can't leave things half-done.</span></p>
+        </div>
+        <span hidden data-mode="thread" data-at="474"></span>
+        <div class="reveal" data-mode="thread" data-at="470"><span class="loop-dot" style="left:474vw;top:70vh"></span><p class="loop-lbl" style="left:474vw;top:70vh;transform:translate(-50%,1rem)">spot it.</p></div>
+        <div class="reveal" data-mode="thread" data-at="483"><span class="loop-dot" style="left:483.44vw;top:53vh"></span><p class="loop-lbl" style="left:483.44vw;top:53vh;transform:translate(1.25rem,-50%)">get it.</p></div>
+        <div class="reveal" data-mode="thread" data-at="486" style="--reveal-delay:.3s"><span class="loop-dot" style="left:474vw;top:36vh"></span><p class="loop-lbl" style="left:474vw;top:36vh;transform:translate(-50%,calc(-100% - 1rem))">make it.</p></div>
+        <div class="reveal" data-mode="thread" data-at="486" style="--reveal-delay:.6s"><span class="loop-dot" style="left:464.56vw;top:53vh"></span><p class="loop-lbl" style="left:464.56vw;top:53vh;transform:translate(calc(-100% - 1.25rem),-50%)">pass it on.</p></div>
+        <p class="reveal at serif italic" data-mode="thread" data-at="486" style="left:474vw;top:53vh;transform:translate(-50%,-50%);font-size:2.25rem;--reveal-delay:1s">again.</p>
+
+        <!-- chapter 5 · outro (520–570vw) -->
+        <span hidden data-mode="thread" data-at="529" data-say="go on. this is the good bit."></span>
+        <div class="at reveal" style="left:519vw;top:22vh" data-at="523">
+          <p class="muted" style="font-size:1.125rem">that's enough about me.</p>
+          <h2 class="h-display" style="margin-top:.75rem;max-width:30rem">here's what came out of it.</h2>
+        </div>
+        <div class="at reveal" style="left:541.6vw;top:53vh;transform:translate(1.5rem,-50%)" data-at="530">
+          <button class="btn btn-ink" data-go="work" data-cursor="show me the work ↓">see the work</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile: vertical stack -->
+  <div class="story-mobile">
+    <div class="m-hero">
+      <p class="muted" style="font-size:.875rem;max-width:14rem;margin-left:auto">a mostly honest map of whatever is on my mind.</p>
+      <p class="hero-title">the<br />field notes of a<br /><span class="serif italic">restless builder.</span></p>
+      <div><a href="#work" class="btn btn-paper" data-go="work" style="margin-right:.5rem">view work</a><a href="#hi" class="btn btn-ink" data-go="hi">let's talk</a></div>
+    </div>
+    <div class="reveal" style="text-align:center">
+      <div class="objs"><div class="obj sm"><div class="float"><div class="art">💻</div></div></div><div class="obj sm"><div class="float" style="animation-delay:.3s"><div class="art">⌨️</div></div></div><div class="obj sm"><div class="float" style="animation-delay:.6s"><div class="art">📷</div></div></div></div>
+      <p class="muted" style="margin-top:1rem">i poke at a lot of things.</p>
+      <h2 class="serif" style="font-size:2.1rem;line-height:1.15">a generalist by accident</h2>
+      <p class="muted" style="font-size:.875rem;margin-top:.25rem">which is a polite way of saying i get distracted.</p>
+      <div class="objs" style="margin-top:1rem"><div class="obj sm"><div class="float" style="animation-delay:1.2s"><div class="art">🐈</div></div></div><div class="obj sm"><div class="float" style="animation-delay:1.5s"><div class="art">🏸</div></div></div><div class="obj sm"><div class="float" style="animation-delay:.9s"><div class="art">🧗</div></div></div></div>
+    </div>
+    <h2 class="reveal serif" style="font-size:2.4rem;line-height:1;text-align:center">but only a few things really stuck.</h2>
+    <div class="reveal row"><div class="obj sm"><div class="float"><div class="art">🌍</div></div></div><div><p class="serif" style="font-size:1.5rem;line-height:1.15">the open web, first.</p><p class="muted" style="font-size:.875rem">fascinated by networks that nobody gets to own.</p></div></div>
+    <div class="reveal row"><div class="obj sm"><div class="float"><div class="art">🎧</div></div></div><div><p class="serif" style="font-size:1.5rem;line-height:1.15">then, people.</p><p class="muted" style="font-size:.875rem">teaching turned out to be the fun part.</p></div></div>
+    <div class="reveal row"><div class="obj sm"><div class="float"><div class="art">🧠</div></div></div><div><p class="serif" style="font-size:1.5rem;line-height:1.15">and these days, AI.</p><p class="muted" style="font-size:.875rem">part engineer, part “huh, what if…?”</p></div></div>
+    <p class="reveal serif" style="font-size:2rem;text-align:center;line-height:1.15">somehow,<br /><span class="muted">i keep ending up…</span></p>
+    <div class="mtl reveal" id="mTimeline"></div>
+    <div class="reveal" style="text-align:center"><p class="serif" style="font-size:2rem"><span class="muted">…</span>looking after things.</p><p style="margin-top:.5rem">if i got curious about it, i built it.</p><p class="muted">if i built it, i stuck around to maintain it.</p></div>
+    <p class="reveal serif" style="font-size:2.3rem;line-height:1.05">apparently, <span class="muted">i can't leave things half-done.</span></p>
+    <div class="reveal m-loop">
+      <span style="left:50%;bottom:-1.9rem;transform:translateX(-50%)">spot it.</span>
+      <span style="right:-.4rem;top:50%;transform:translate(100%,-50%)">get it.</span>
+      <span style="left:50%;top:-1.9rem;transform:translateX(-50%)">make it.</span>
+      <span style="left:-.4rem;top:50%;transform:translate(-100%,-50%)">pass it on.</span>
+      <span class="serif italic" style="left:50%;top:50%;transform:translate(-50%,-50%);font-size:1.5rem">again.</span>
+    </div>
+    <div class="reveal" style="margin-top:2rem"><p class="muted" style="font-size:.875rem">that's enough about me.</p><h2 class="serif" style="font-size:2.3rem;line-height:1.1;margin:.5rem 0 1.25rem">here's what came out of it.</h2><button class="btn btn-ink" data-go="work">see the work</button></div>
+  </div>
+</section>
+
+<!-- =================================== WORK =================================== -->
+<section id="work">
+  <div class="works-bg" aria-hidden="true"><p>WORKS</p></div>
+  <div class="work-grid">
+    <div class="work-intro">
+      <p class="muted" style="font-size:.875rem">selected work / 2021—now</p>
+      <h2>a handful of things, <span class="italic">made with care.</span></h2>
+      <p class="muted" style="margin-top:2rem;max-width:24rem">tools, experiments and side projects, built end to end.</p>
+      <p style="margin:2.5rem 0 .75rem;font-size:.875rem">show me</p>
+      <div class="filters" id="filters">
+        <button class="btn btn-paper" aria-pressed="true" data-filter="all" data-cursor="filter: all">All</button>
+        <button class="btn btn-paper" aria-pressed="false" data-filter="ai" data-cursor="filter: ai">AI</button>
+        <button class="btn btn-paper" aria-pressed="false" data-filter="tools" data-cursor="filter: tools">Tools</button>
+        <button class="btn btn-paper" aria-pressed="false" data-filter="oss" data-cursor="filter: open source">Open source</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="projects" id="projects">
+        <article data-tags="ai oss">
+          <a class="shot" href="#" target="_blank" rel="noreferrer" data-cursor="see it live ↗"><div class="img" style="background:linear-gradient(135deg,oklch(86% .07 252),oklch(92% .05 300))"><div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="body"><b>Lantern</b><span style="width:70%"></span><span style="width:50%"></span></div></div></div></a>
+          <div class="meta"><div><p class="muted" style="font-size:.75rem">01 / ai · open source</p><h3>Lantern</h3><p class="muted" style="margin-top:.5rem;max-width:36rem">a research assistant that reads the docs so you don't have to: cites every answer, runs locally.</p></div><a class="btn btn-paper btn-icon" href="#" target="_blank" rel="noreferrer" aria-label="Lantern source code" data-cursor="peek at the code">↗</a></div>
+        </article>
+        <article data-tags="tools">
+          <a class="shot" href="#" target="_blank" rel="noreferrer" data-cursor="see it live ↗"><div class="img" style="background:linear-gradient(135deg,oklch(88% .07 145),oklch(93% .05 85))"><div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="body"><b>Tidepool</b><span style="width:60%"></span><span style="width:40%"></span></div></div></div></a>
+          <div class="meta"><div><p class="muted" style="font-size:.75rem">02 / tools</p><h3>Tidepool</h3><p class="muted" style="margin-top:.5rem;max-width:36rem">a calm dashboard for noisy systems: groups alerts, explains them, and lets you sleep.</p></div><a class="btn btn-paper btn-icon" href="#" target="_blank" rel="noreferrer" aria-label="Tidepool source code" data-cursor="peek at the code">↗</a></div>
+        </article>
+        <article data-tags="tools oss">
+          <a class="shot" href="#" target="_blank" rel="noreferrer" data-cursor="see it live ↗"><div class="img" style="background:linear-gradient(135deg,oklch(88% .08 62),oklch(90% .06 25))"><div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="body"><b>Paperplane</b><span style="width:65%"></span><span style="width:45%"></span></div></div></div></a>
+          <div class="meta"><div><p class="muted" style="font-size:.75rem">03 / tools · open source</p><h3>Paperplane</h3><p class="muted" style="margin-top:.5rem;max-width:36rem">send files between your own devices, peer to peer, end-to-end encrypted, no account needed.</p></div><a class="btn btn-paper btn-icon" href="#" target="_blank" rel="noreferrer" aria-label="Paperplane source code" data-cursor="peek at the code">↗</a></div>
+        </article>
+      </div>
+      <div class="more">
+        <p class="serif" style="font-size:1.875rem;line-height:1.1">interested?<br /><span class="muted">there's more.</span></p>
+        <a href="#" class="pill" data-cursor="careful, it goes deep.">more rabbit holes <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================== HI =================================== -->
+<section id="hi">
+  <div class="hi-grid">
+    <div class="photo-wrap">
+      <div class="photo" id="photo" data-cursor="go on, drag me.">
+        <!-- placeholder portrait: replace this svg with <img src="me.webp"> -->
+        <svg viewBox="0 0 300 400" aria-label="placeholder portrait">
+          <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="oklch(90% .03 252)"/><stop offset="1" stop-color="oklch(82% .05 252)"/></linearGradient></defs>
+          <path d="M18 30 Q14 12 34 12 L270 8 Q290 8 288 28 L292 372 Q292 392 272 392 L28 390 Q10 390 10 372 Z" fill="#fff"/>
+          <rect x="30" y="28" width="240" height="300" fill="url(#pg)"/>
+          <circle cx="150" cy="150" r="52" fill="oklch(35% .02 70)"/>
+          <path d="M60 328 Q66 228 150 222 Q234 228 240 328 Z" fill="oklch(35% .02 70)"/>
+          <text x="150" y="365" text-anchor="middle" font-family="Patrick Hand, cursive" font-size="22" fill="oklch(40% .01 70)">your photo here</text>
+        </svg>
+      </div>
+      <p class="note" style="left:2%;top:4%">same person…<br /><svg viewBox="0 0 56 40" aria-hidden="true"><path d="M4 6 C20 6 40 14 48 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M40 30 L48 33 L50 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></p>
+      <p class="note" style="right:0;bottom:8%;text-align:right">still figuring<br />it all out.</p>
+    </div>
+
+    <div class="hi-copy">
+      <p class="note" style="position:relative;margin-bottom:.5rem">who made this?</p>
+      <h2><span>oh, hi.</span></h2>
+      <p class="sub">still curious. still building.</p>
+      <p class="cta">let's make something <span class="italic">together.</span></p>
+      <div class="links">
+        <a href="mailto:hello@example.com" data-cursor="my inbox is open."><span>hello@example.com</span><span>↗</span></a>
+        <a href="#" target="_blank" rel="noreferrer"><span>linkedin</span><span>↗</span></a>
+        <a href="#" target="_blank" rel="noreferrer"><span>github</span><span>↗</span></a>
+        <a href="#" target="_blank" rel="noreferrer"><span>x</span><span>↗</span></a>
+      </div>
+      <div class="fun">
+        <div class="obj sm"><div class="shadow"></div><div class="float"><div class="art" role="img" aria-label="an astronaut">🧑‍🚀</div></div><div class="bubble">one day. maybe.</div></div>
+        <p class="note">fun fact: i still want to go to space.</p>
+      </div>
+    </div>
+  </div>
+  <button class="story-link foot" data-go="brain" data-cursor="rewind ↑">© 2026 alex · back to top ↑</button>
+</section>
+</main>
+
+<!-- talking cursor -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <svg class="arrow" viewBox="0 0 24 24"><path d="M3 2 L20 11 L12 13 L8 21 Z" fill="var(--cursor)" stroke="var(--cursor-foreground)" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  <div class="bubble" id="cbubble"><span id="ctext"></span><span class="caret">|</span></div>
+</div>
+
+<script>
+(() => {
+  const vw = () => innerWidth / 100, vh = () => innerHeight / 100;
+  const isDesk = () => innerWidth >= 768;
+  const html = document.documentElement, body = document.body;
+
+  /* ---------------- data: timeline ---------------- */
+  const TIMELINE = [
+    { year: "2019", title: "built my first thing.", body: "a tiny tool for a school club. it broke weekly." },
+    { year: "2020", title: "learned by breaking.", body: "tutorials, side quests, and a lot of stack traces." },
+    { year: "2021", title: "went back to basics.", body: "computer science, properly this time." },
+    { year: "2022", title: "started shipping.", body: "hackathons, open-source patches, real users." },
+    { year: "2023", title: "brought people along.", body: "workshops, mentoring, the occasional talk." },
+    { year: "2024", title: "then, AI happened.", body: "now making models behave in production." },
+  ];
+  const TL_X = 304, TL_GAP = 18, TL_TICK = 11;
+
+  /* ---------------- thread geometry (x in vw, y in vh) ---------------- */
+  const ANCHORS = [
+    [56.9,19.9],[72,40],[86,58],[98,50],[110,44],[114.4,36],[110,28],[105.6,36],[112,45],[122,62],[140,58],
+    [160,46],[174.5,35.6],[190,40],[212,47],[240,46],[268,42],[290,50],
+    [304,52],[322,49],[340,54],[358,49],[376,53],[394,50],
+    [408,42],[440,48],[458,64],[474,70],[483.44,53],[474,36],[464.56,53],[474,70],
+    [492,74],[512,66],[530,57],[541.6,53]
+  ];
+  // thread is built in real pixels so the stroke stays crisp and the dash reveal stays accurate
+  function catmull(pts, sx, sy) {
+    const P = pts.map(([x, y]) => [x * sx, y * sy]), f = n => n.toFixed(1);
+    let d = `M${f(P[0][0])} ${f(P[0][1])}`;
+    for (let i = 0; i < P.length - 1; i++) {
+      const p0 = P[i-1] || P[i], p1 = P[i], p2 = P[i+1], p3 = P[i+2] || p2;
+      d += ` C${f(p1[0] + (p2[0]-p0[0])/6)} ${f(p1[1] + (p2[1]-p0[1])/6)} ${f(p2[0] - (p3[0]-p1[0])/6)} ${f(p2[1] - (p3[1]-p1[1])/6)} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    return d;
+  }
+  const svg = document.getElementById("threadSvg"), path = document.getElementById("threadPath");
+  const N_SAMPLES = 3000;
+  let total = 0, samples = [];
+  function buildThread() {
+    const sx = vw(), sy = vh();
+    svg.setAttribute("viewBox", `0 0 ${570 * sx} ${100 * sy}`);
+    path.setAttribute("d", catmull(ANCHORS, sx, sy));
+    total = path.getTotalLength();
+    path.setAttribute("stroke-dasharray", `${total} ${total}`);
+    samples = [];
+    let runMax = -Infinity;
+    for (let i = 0; i <= N_SAMPLES; i++) {
+      const p = path.getPointAtLength(total * i / N_SAMPLES), x = p.x / sx;
+      runMax = Math.max(runMax, x);
+      samples.push({ x, y: p.y / sy, f: i / N_SAMPLES, max: runMax });
+    }
+  }
+  buildThread();
+  // fraction of thread drawn when the pen reaches x (vw): stop at the first point that goes past x
+  const fracAt = x => { let lo = 0, hi = samples.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; samples[m].max <= x ? lo = m : hi = m - 1; } return samples[lo]; };
+  // y of the thread at x (first pass), for placing things on it
+  const yAt = x => (samples.find(s => s.x >= x) || samples[samples.length-1]).y;
+
+  /* ---------------- build timeline on the thread ---------------- */
+  const tl = document.getElementById("timeline"), mtl = document.getElementById("mTimeline");
+  TIMELINE.forEach((t, i) => {
+    const x = TL_X + i * TL_GAP, y = yAt(x), down = i % 2 === 1;
+    const wrap = document.createElement("div");
+    wrap.className = "reveal"; wrap.dataset.at = x;
+    wrap.innerHTML =
+      `<span class="tick" style="left:${x}vw;top:${down ? y : y - TL_TICK}vh;height:${TL_TICK}vh"></span>` +
+      `<span class="knot" style="left:${x}vw;top:${y}vh"></span>` +
+      `<div class="tl-card" style="left:${x}vw;${down ? `top:${y + TL_TICK + 1}vh` : `bottom:${100 - (y - TL_TICK - 1)}vh`}">` +
+      `<p class="yr">${t.year}</p><p class="t">${t.title}</p><p class="b">${t.body}</p></div>`;
+    tl.appendChild(wrap);
+    mtl.insertAdjacentHTML("beforeend", `<div><p>${t.title}</p><p class="muted" style="font-size:.875rem;line-height:1.35">${t.body}</p><p class="muted" style="font-size:.75rem;opacity:.8">${t.year}</p></div>`);
+  });
+  /* ---------------- talking cursor ---------------- */
+  const cur = document.getElementById("cursor"), cb = document.getElementById("cbubble"), ct = document.getElementById("ctext");
+  const fine = matchMedia("(pointer:fine)").matches;
+  if (fine) html.classList.add("has-cursor");
+  const pos = { x: -200, y: -200 }, tgt = { x: -200, y: -200 };
+  let typing = 0, hideT = 0, current = null;
+  function say(text, { sticky = false } = {}) {
+    if (current === text) return;
+    current = text;
+    clearInterval(typing); clearTimeout(hideT);
+    if (!text) { cb.classList.remove("show"); return; }
+    ct.textContent = ""; cb.classList.add("show");
+    let n = 0;
+    typing = setInterval(() => {
+      ct.textContent = text.slice(0, ++n);
+      if (n >= text.length) { clearInterval(typing); if (!sticky) hideT = setTimeout(() => { if (current === text) say(null); }, 2600); }
+    }, 28);
+  }
+  let hoverText = "", lastHover = "";
+  addEventListener("pointermove", e => {
+    if (pos.x === -200) { pos.x = e.clientX; pos.y = e.clientY; }
+    tgt.x = e.clientX; tgt.y = e.clientY; cur.classList.add("on");
+  }, { passive: true });
+  addEventListener("pointerover", e => {
+    const t = e.target instanceof Element ? e.target.closest("[data-cursor]") : null;
+    const txt = t ? t.dataset.cursor : "";
+    if (txt !== hoverText) { hoverText = txt; if (txt) say(txt, { sticky: true }); else if (current && current === lastHover) say(null); lastHover = txt; }
+  }, { passive: true });
+  document.addEventListener("pointerleave", () => cur.classList.remove("on"));
+  (function loop() {
+    pos.x += (tgt.x - pos.x) * .35; pos.y += (tgt.y - pos.y) * .35;
+    cur.style.transform = `translate3d(${pos.x - 3}px,${pos.y - 2}px,0)`;
+    requestAnimationFrame(loop);
+  })();
+
+  /* ---------------- intro ---------------- */
+  const INTRO_MS = 2600, introStart = performance.now();
+  let introDone = false, introLines = false;
+  document.querySelectorAll("[data-intro]").forEach(el => {
+    el.style.animationDelay = el.dataset.intro + "s";
+    el.classList.add("animate-reveal");
+  });
+  const hdr = document.getElementById("hdr");
+  hdr.classList.add("animate-reveal"); hdr.style.animationDelay = "2.6s";
+  body.style.overflow = "hidden"; scrollTo(0, 0);
+  if (location.hash && location.hash !== "#brain") finishIntro();
+  function finishIntro() {
+    if (introDone) return;
+    introDone = true;
+    body.style.overflow = ""; body.classList.remove("locked");
+    document.querySelectorAll(".intro-hide").forEach(el => { el.style.animationDelay = "0s"; });
+    setTimeout(() => say("hey there, alex here."), 1800);
+    ["wheel","touchmove","keydown"].forEach(ev => removeEventListener(ev, finishIntro));
+    if (location.hash) document.querySelector(location.hash)?.scrollIntoView({ behavior: "instant" });
+  }
+  setTimeout(finishIntro, INTRO_MS);
+  ["wheel","touchmove","keydown"].forEach(ev => addEventListener(ev, finishIntro, { passive: true }));
+
+  /* ---------------- horizontal story ---------------- */
+  const section = document.getElementById("brain"), track = document.getElementById("track");
+  const pen = document.getElementById("pen"), hanger = document.getElementById("hanger");
+  const N = 470, THREAD_LEAD = 55, REVEAL_EDGE = 4, EASE = .085;
+  const said = new Set();
+  const atEls = [...track.querySelectorAll("[data-at]")];
+  let prog = -1;
+  const introFrac = fracAt(100).f;
+
+  function tick(now) {
+    if (isDesk()) {
+      const range = section.offsetHeight - innerHeight;
+      const t = Math.min(1, Math.max(0, (scrollY - section.offsetTop) / Math.max(range, 1)));
+      prog = prog < 0 || Math.abs(t - prog) < 5e-5 ? t : prog + (t - prog) * EASE;
+      const shift = prog * N;
+      track.style.transform = `translate3d(-${shift}vw,0,0)`;
+
+      // thread: intro draws the first screen over 2.6s, then the pen follows scroll
+      const introT = Math.min(1, (now - introStart) / INTRO_MS);
+      const easeIn = 1 - Math.pow(1 - introT, 3);
+      const tip = fracAt(shift + THREAD_LEAD);
+      const f = Math.max(introFrac * easeIn, tip.f);
+      path.setAttribute("stroke-dashoffset", (total * (1 - f)).toFixed(1));
+      const s = samples[Math.round(f * N_SAMPLES)];
+      pen.style.left = s.x + "vw"; pen.style.top = s.y + "vh";
+      pen.style.opacity = introT > .05 && f < .999 ? 1 : 0;
+
+      // hanger follows the thread under it
+      const hx = 174.5, hy = yAt(hx);
+      hanger.style.left = `calc(${hx}vw - 5.13vw)`; hanger.style.top = hy + "vh";
+
+      const threadEdge = shift + THREAD_LEAD, viewEdge = shift + 100 - REVEAL_EDGE;
+      for (const el of atEls) {
+        const on = (el.dataset.mode === "thread" ? threadEdge : viewEdge) >= +el.dataset.at;
+        el.toggleAttribute("data-shown", on);
+        const msg = el.dataset.say;
+        if (on && msg && introDone && !said.has(msg)) { said.add(msg); say(msg); }
+      }
+    }
+    // solid header once past the story
+    hdr.classList.toggle("solid", scrollY > section.offsetTop + section.offsetHeight - 80);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  let rT = 0;
+  addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(buildThread, 120); });
+
+  /* ---------------- mobile reveals ---------------- */
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.setAttribute("data-shown", ""); io.unobserve(e.target); } }), { threshold: .2 });
+  document.querySelectorAll(".story-mobile .reveal").forEach(el => io.observe(el));
+
+  /* ---------------- 3D tilt on objects ---------------- */
+  document.querySelectorAll(".obj").forEach(o => {
+    const art = o.querySelector(".art");
+    o.addEventListener("pointermove", e => {
+      const r = o.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5;
+      art.style.transform = `rotateY(${dx * 30}deg) rotateX(${-dy * 30}deg) scale(1.08) translateZ(0)`;
+    });
+    o.addEventListener("pointerleave", () => { art.style.transform = ""; });
+  });
+
+  /* ---------------- navigation ---------------- */
+  const menuToggle = open => body.classList.toggle("menu-open", open);
+  document.getElementById("burger").addEventListener("click", () => menuToggle(!body.classList.contains("menu-open")));
+  document.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", e => {
+    e.preventDefault(); finishIntro(); menuToggle(false);
+    const id = el.dataset.go;
+    if (id === "brain") scrollTo({ top: 0, behavior: "smooth" });
+    else document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+  }));
+
+  /* ---------------- project filters ---------------- */
+  const filters = document.querySelectorAll("#filters [data-filter]");
+  filters.forEach(b => b.addEventListener("click", () => {
+    filters.forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.filter;
+    document.querySelectorAll("#projects article").forEach(a => { a.hidden = f !== "all" && !a.dataset.tags.split(" ").includes(f); });
+  }));
+
+  /* ---------------- draggable photo ---------------- */
+  const photo = document.getElementById("photo");
+  let drag = null, off = { x: 0, y: 0 };
+  photo.addEventListener("pointerdown", e => {
+    drag = { sx: e.clientX - off.x, sy: e.clientY - off.y };
+    photo.setPointerCapture(e.pointerId); photo.classList.add("dragging");
+  });
+  photo.addEventListener("pointermove", e => {
+    if (!drag) return;
+    off.x = e.clientX - drag.sx; off.y = e.clientY - drag.sy;
+    photo.style.transform = `translate(${off.x}px,${off.y}px) rotate(${Math.max(-12, Math.min(12, off.x / 25))}deg)`;
+  });
+  const drop = () => { if (!drag) return; drag = null; photo.classList.remove("dragging"); off = { x: 0, y: 0 }; photo.style.transform = ""; say("whee. back where i belong."); };
+  photo.addEventListener("pointerup", drop); photo.addEventListener("pointercancel", drop);
+})();
+</script>
+</body>
+</html>
