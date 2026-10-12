@@ -72,14 +72,20 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 .anatomy{position:absolute;bottom:2.5rem;left:2rem;transition:all .7s}
 .anatomy p{font-size:2.25rem;line-height:.95;font-weight:600}
 .anatomy em{font-family:var(--serif);font-style:italic;font-weight:500}
+.anatomy .friend{display:none;max-width:20rem;margin-top:1rem;font-size:.875rem;line-height:calc(1.25/.875);font-weight:400}
 .note{position:absolute;left:62%;top:7rem;display:flex;max-width:14rem;align-items:flex-start;gap:.5rem;transform-origin:bottom left;font-size:.875rem;line-height:calc(1.25/.875);color:var(--muted-foreground);transition:all .5s}
 .note svg{margin-top:.25rem;height:1.5rem;width:2rem;flex-shrink:0}
-.welcome{position:absolute;bottom:2rem;right:2rem;display:none;text-align:right;transition:all .7s .15s}
-.welcome p{margin-bottom:1rem;font-size:.875rem;line-height:calc(1.25/.875)}
+.welcome{position:absolute;bottom:2rem;right:4.5rem;display:none;text-align:center;transition:all .7s .15s}
+.welcome p{margin-bottom:.75rem;font-family:var(--sans);font-size:1.25rem;line-height:1.3;font-weight:600;color:var(--foreground)}
+.welcome .qr{width:11rem;margin-left:auto}
+.welcome .qr img{display:block;width:100%;height:auto}
+.store-badges{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.store-badges img{display:block;height:3rem;width:auto}
 @media (min-width:640px){
   .anatomy{bottom:2rem}
   .anatomy p{font-size:3rem;line-height:.95}
   .welcome{display:block}
+  .anatomy .friend{display:block}
 }
 /* mobile menu */
 .menu-btn{position:relative;height:2.5rem;width:2.5rem;pointer-events:auto}
@@ -117,12 +123,16 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 .mobile{position:relative;overflow:hidden}
 .m-thread{pointer-events:none;position:absolute;left:0;top:0;opacity:0;transition:opacity .7s}
 .m-thread.on{opacity:1}
-.m-hero{position:relative;height:132svh}
+.m-hero{position:relative;height:max(132svh,calc(90svh + 24rem))}
 .m-scribble{position:absolute;left:-10%;top:23svh;height:62svh;width:120%;overflow:visible}
 .m-note{position:absolute;right:1.25rem;top:17svh;display:flex;width:11rem;align-items:flex-start;gap:.375rem;font-size:.8rem;line-height:1.375;color:var(--muted-foreground)}
 .m-note svg{margin-top:1rem;height:1.25rem;width:1.75rem;flex-shrink:0}
 .m-anatomy{position:absolute;left:1.25rem;top:90svh;font-size:2.6rem;line-height:.95;font-weight:600}
 .m-anatomy em{font-family:var(--serif);font-style:italic;font-weight:500}
+.m-hero-badges{position:absolute;left:1.25rem;top:calc(90svh + 14.5rem);right:1.25rem;flex-direction:row;align-items:center;gap:.5rem}
+.m-hero-badges img{height:2.5rem}
+.m-friend{position:absolute;left:1.25rem;right:1.25rem;top:calc(90svh + 8.25rem);max-width:20rem;font-size:.875rem;line-height:calc(1.25/.875)}
+@media (max-width:767px){.welcome{display:none!important}}
 .anchor{position:absolute}
 .muted{color:var(--muted-foreground)}
 
@@ -225,6 +235,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
       <div class="track" id="track">
         <svg class="thread" aria-hidden="true" viewBox="0 0 5700 1000" preserveAspectRatio="none">
           <path id="thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- scribble: scaled 1.3x about its centre and moved to the middle of the first screen -->
+          <g transform="translate(-176 -42) scale(1.3)">
           <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
@@ -244,12 +256,14 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C620 560 715 445 760 430" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          </g>
           <image id="thread-tip" href="assets/nudge-mascot.webp" width="0" height="0" preserveAspectRatio="none" style="opacity:0" />
         </svg>
         <div class="layer">
           <div class="hero">
             <div class="anatomy animate-reveal d220">
               <p>stop<br />overthinking.<br /><em>start doing.</em></p>
+              <p class="friend">the friend who calls you out (kindly) and helps you take the one small step that gets you moving.</p>
             </div>
             <div class="note animate-reveal d220">
               <svg aria-hidden="true" viewBox="0 0 40 30">
@@ -259,9 +273,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
               <span>this is how thoughts move in your mind when you're overthinking.</span>
             </div>
             <div class="welcome animate-reveal d235">
-              <p style="max-width:20rem;margin-left:auto">the friend who calls you out (kindly) and helps you take the one small step that gets you moving.</p>
-              <button class="btn btn-paper" data-go="how">how it works</button>
-              <button class="btn btn-ink" data-go="start">start free trial</button>
+              <p>Scan to download</p>
+              <div class="qr"><img src="assets/qr-download.png" width="500" height="500" alt="QR code to download nudge" decoding="async" draggable="false" /></div>
             </div>
           </div>
 
@@ -371,6 +384,11 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           <span>this is how thoughts move in your mind when you're overthinking.</span>
         </div>
         <p class="m-anatomy animate-reveal d220">stop<br />overthinking.<br /><em>start doing.</em></p>
+        <p class="m-friend animate-reveal d220">the friend who calls you out (kindly) and helps you take the one small step that gets you moving.</p>
+        <div class="store-badges m-hero-badges animate-reveal d235">
+          <a href="https://apps.apple.com/vn/app/nudge-stop-overthinking/id6760641605" target="_blank" rel="noopener" aria-label="Download on the App Store"><img src="assets/badge-app-store.webp" width="171" height="57" alt="Download on the App Store" draggable="false" /></a>
+          <a href="https://play.google.com/store/apps/details?id=com.tabohraapps.nudge&amp;hl=en_IN" target="_blank" rel="noopener" aria-label="Get it on Google Play"><img src="assets/badge-google-play.webp" width="171" height="57" alt="Get it on Google Play" draggable="false" /></a>
+        </div>
         <span class="anchor" data-anchor style="left:86%;top:66svh"></span>
         <span class="anchor" data-anchor style="left:93%;top:122svh"></span>
       </div>
@@ -461,7 +479,10 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
         <div class="btn-wrap">
           <span class="anchor" data-anchor style="left:calc(100% + 2.75rem);top:-.25rem"></span>
           <span class="anchor" data-anchor style="left:100%;top:50%"></span>
-          <a class="btn btn-ink" href="#">start free trial <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a>
+          <div class="store-badges">
+            <a href="https://apps.apple.com/vn/app/nudge-stop-overthinking/id6760641605" target="_blank" rel="noopener" aria-label="Download on the App Store"><img src="assets/badge-app-store.webp" width="171" height="57" alt="Download on the App Store" draggable="false" /></a>
+            <a href="https://play.google.com/store/apps/details?id=com.tabohraapps.nudge&amp;hl=en_IN" target="_blank" rel="noopener" aria-label="Get it on Google Play"><img src="assets/badge-google-play.webp" width="171" height="57" alt="Get it on Google Play" draggable="false" /></a>
+          </div>
         </div>
       </div>
     </div>
@@ -517,10 +538,10 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 
   // Intro: one unbroken line leaves the scribble's loose end, winds into a looser
   // loop, then a nearly clean one, then runs on as the story thread.
-  const SCRIBBLE_END = [76, 43];   // loose end of the hand-drawn scribble (vw, vh)
+  const SCRIBBLE_END = [81.2, 51.7];   // loose end of the hand-drawn scribble (vw, vh)
   // Each loop: centre (vw, vh), radius (fraction of viewport height), turns, how tangled, sideways drift.
   const LOOPS = [
-    { cx: 91, cy: 40, r: .14, turns: 4, tangle: .45, drift: .3, seed: 1 },
+    { cx: 94, cy: 40, r: .14, turns: 4, tangle: .45, drift: .3, seed: 1 },
     { cx: 113, cy: 44, r: .12, turns: 3, tangle: .06, drift: .15, seed: 3 },
   ];
   // A loop is entered at its bottom heading right, winds round, and leaves the same way,
