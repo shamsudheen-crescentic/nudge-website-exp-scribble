@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Nudge — stop overthinking, start doing</title>
 <meta name="description" content="Stuck in your head? Nudge helps you break free from overthinking and actually do the thing." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:ital,wght@0,500;1,500&family=Patrick+Hand&display=swap" />
+<link rel="preload" href="assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/newsreader-500-italic-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/newsreader-500-latin.woff2" as="font" type="font/woff2" crossorigin />
 <style>
+/* self-hosted latin subsets (DM Sans is one variable file for 400–600) */
+@font-face{font-family:"DM Sans";font-style:normal;font-weight:400 600;font-display:swap;src:url(assets/fonts/dm-sans-latin.woff2) format("woff2")}
+@font-face{font-family:"Newsreader";font-style:normal;font-weight:500;font-display:swap;src:url(assets/fonts/newsreader-500-latin.woff2) format("woff2")}
+@font-face{font-family:"Newsreader";font-style:italic;font-weight:500;font-display:swap;src:url(assets/fonts/newsreader-500-italic-latin.woff2) format("woff2")}
 :root{
   --cursor:oklch(64% .2 252);
   --cursor-foreground:oklch(99% 0 0);
@@ -114,7 +118,7 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 .m-thread{pointer-events:none;position:absolute;left:0;top:0;opacity:0;transition:opacity .7s}
 .m-thread.on{opacity:1}
 .m-hero{position:relative;height:132svh}
-.m-scribble{position:absolute;left:0;right:0;top:27svh;height:50svh;width:100%;overflow:visible}
+.m-scribble{position:absolute;left:-10%;top:23svh;height:62svh;width:120%;overflow:visible}
 .m-note{position:absolute;right:1.25rem;top:17svh;display:flex;width:11rem;align-items:flex-start;gap:.375rem;font-size:.8rem;line-height:1.375;color:var(--muted-foreground)}
 .m-note svg{margin-top:1rem;height:1.25rem;width:1.75rem;flex-shrink:0}
 .m-anatomy{position:absolute;left:1.25rem;top:90svh;font-size:2.6rem;line-height:.95;font-weight:600}
@@ -124,7 +128,9 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 
 /* scroll-in reveal */
 .reveal{transition:opacity .9s ease-out,filter .9s ease-out,transform .9s var(--ease-out);transition-delay:var(--reveal-delay,0s)}
-.reveal:not([data-shown]){opacity:0;filter:blur(12px);transform:translateY(.5rem);transition-delay:0s}
+.reveal:not([data-shown]){opacity:0;transform:translateY(.5rem);transition-delay:0s}
+/* the blur-in is costly to rasterise on phones: keep it for desktop pointers only */
+@media (min-width:768px) and (hover:hover){.reveal:not([data-shown]){filter:blur(12px)}}
 
 /* floating objects with a speech-bubble label */
 @keyframes float-object{0%,to{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(3deg)}}
@@ -146,7 +152,15 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 .bubble.left{left:0;translate:none}
 .bubble.right{left:auto;right:0;translate:none;border-radius:18px 18px 5px 18px}
 .figure.open .bubble{opacity:1;transform:none}
-.bubble i{font-style:normal;animation:2s cubic-bezier(.4,0,.6,1) infinite pulse}
+.bubble i{font-style:normal}
+.figure.open .bubble i{animation:2s cubic-bezier(.4,0,.6,1) infinite pulse}
+/* figures out of view stop animating (toggled by an IntersectionObserver) */
+.figure.off .float{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .figure .float,.figure.open .bubble i{animation:none}
+  .reveal{transition-duration:.01s}
+}
 
 /* mobile story chapters */
 .m-trades{position:relative;height:1500px}
@@ -230,7 +244,7 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C620 560 715 445 760 430" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <image id="thread-tip" href="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" width="0" height="0" preserveAspectRatio="none" style="opacity:0" />
+          <image id="thread-tip" href="assets/nudge-mascot.webp" width="0" height="0" preserveAspectRatio="none" style="opacity:0" />
         </svg>
         <div class="layer">
           <div class="hero">
@@ -252,33 +266,33 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           </div>
 
           <!-- chapter 1 · jack of all trades (100–175vw) -->
-          <div class="at" style="left:122vw;top:9vh"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs.webp" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:128vw;top:63vh"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo.webp" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:122vw;top:9vh"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs-sm.webp" width="400" height="235" loading="lazy" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:128vw;top:63vh"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo-sm.webp" width="268" height="400" loading="lazy" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
           <p class="at reveal" data-mode="thread" data-at="117" style="left:113.5vw;top:44vh;translate:-50% -50%;white-space:nowrap;font-family:var(--serif);font-weight:500;font-size:1.5rem;letter-spacing:.08em">IT'S OKAY</p>
           <div class="at reveal" style="left:130vw;top:32vh;width:30vw;text-align:center" data-mode="thread" data-at="135">
             <p class="muted" style="font-size:1.125rem">stuck in your head?</p>
             <h2 class="d-display" style="white-space:nowrap">we've all been there.</h2>
             <p class="muted" style="font-size:1.125rem;margin-top:.5rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
           </div>
-          <div class="at" style="left:148vw;top:62vh"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later.webp" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:152vw;top:9vh"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email.webp" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:168vw;top:68vh"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="d-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float hang"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:148vw;top:62vh"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later-sm.webp" width="400" height="293" loading="lazy" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:152vw;top:9vh"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email-sm.webp" width="400" height="390" loading="lazy" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:168vw;top:68vh"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="d-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float hang"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
 
           <!-- chapter 2 · few things have my heart (180–290vw) -->
           <div class="at reveal" style="left:182vw;top:12vh;width:22rem" data-at="184">
             <h2 class="d-display" style="line-height:1">so, meet nudge.</h2>
           </div>
           <div class="at reveal d-love" style="left:190vw;top:70vh" data-at="194">
-            <div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
             <div class="copy"><p class="d-big">a friend, not a coach.</p><p>it calls you out (kindly) and helps you move forward.</p></div>
           </div>
           <div class="at reveal d-love" style="left:212vw;top:6vh" data-at="216">
-            <div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:.5s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:.5s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
             <div class="copy"><p class="d-big">no productivity guilt.</p><p>not hustle culture. not optimizing your life.</p></div>
           </div>
           <div class="at reveal d-love" style="left:250vw;top:28vh" data-at="254">
-            <div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
+            <div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div>
             <div class="copy"><p class="d-big">fewer stories. more living.</p><p>get unstuck from the stories we tell ourselves, and get back to your day.</p></div>
           </div>
 
@@ -325,10 +339,10 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     <div class="mobile" id="mobile">
       <svg class="m-thread" id="m-thread-svg" aria-hidden="true">
         <path id="m-thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-        <image id="m-thread-tip" href="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" width="56" height="56" preserveAspectRatio="none" style="opacity:0" />
+        <image id="m-thread-tip" href="assets/nudge-mascot.webp" width="56" height="56" preserveAspectRatio="none" style="opacity:0" />
       </svg>
       <div class="m-hero">
-        <svg class="m-scribble" id="m-scribble" aria-hidden="true" viewBox="250 100 550 600">
+        <svg class="m-scribble" id="m-scribble" aria-hidden="true" viewBox="325 125 445 555">
           <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
@@ -361,8 +375,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
         <span class="anchor" data-anchor style="left:93%;top:122svh"></span>
       </div>
       <div class="m-trades">
-        <div class="obj" style="left:3%;top:30px"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs.webp" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
-        <div class="obj" style="right:5%;top:150px"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email.webp" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:3%;top:30px"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs-sm.webp" width="400" height="235" loading="lazy" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:5%;top:150px"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email-sm.webp" width="400" height="390" loading="lazy" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
         <span class="anchor" data-anchor style="left:95%;top:400px"></span>
         <div class="center reveal">
           <p class="muted">stuck in your head?</p>
@@ -370,11 +384,11 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           <p class="muted" style="margin-top:.25rem;font-size:.875rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
         </div>
         <span class="anchor" data-anchor style="left:95%;top:590px"></span>
-        <div class="obj" style="left:4%;top:610px"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo.webp" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
-        <div class="obj" style="right:3%;top:700px"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later.webp" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
-        <div class="obj" style="left:6%;top:1010px"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:4%;top:610px"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo-sm.webp" width="268" height="400" loading="lazy" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:3%;top:700px"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later-sm.webp" width="400" height="293" loading="lazy" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:6%;top:1010px"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
         <span class="anchor" data-anchor style="left:4%;top:1260px"></span>
-        <div class="m-climber" id="m-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+        <div class="m-climber" id="m-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
         <span class="anchor" data-anchor style="left:96%;top:1300px"></span>
       </div>
 
@@ -383,19 +397,19 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
         <span class="anchor" data-anchor style="left:5%;top:110px"></span>
         <h2 class="reveal">so, meet<br />nudge.</h2>
           <div class="m-love reveal">
-            <div class="fig-wrap"><div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float" style="animation-delay:0.0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <div class="fig-wrap"><div class="figure sm" data-label="the world can wait five minutes."><div class="shadow"></div><div class="float" style="animation-delay:0.0s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
             <p class="title">a friend, not a coach.</p>
             <p class="body">it calls you out (kindly) and helps you move forward.</p>
             <span class="anchor" data-anchor style="left:-0.25rem;top:calc(100% + 0.75rem)"></span>
           </div>
           <div class="m-love reveal alt">
-            <div class="fig-wrap"><div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:0.5s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <div class="fig-wrap"><div class="figure sm" data-label="i'm listening. go on."><div class="shadow"></div><div class="float" style="animation-delay:0.5s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
             <p class="title">no productivity guilt.</p>
             <p class="body">not hustle culture. not optimizing your life.</p>
             <span class="anchor" data-anchor style="left:calc(100% + 0.25rem);top:calc(100% + 0.75rem)"></span>
           </div>
           <div class="m-love reveal">
-            <div class="fig-wrap"><div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1.0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+            <div class="fig-wrap"><div class="figure sm" data-label="it's loud in here."><div class="shadow"></div><div class="float" style="animation-delay:1.0s"><img src="assets/nudge-mascot.webp" width="500" height="500" loading="lazy" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
             <p class="title">fewer stories. more living.</p>
             <p class="body">get unstuck from the stories we tell ourselves, and get back to your day.</p>
             <span class="anchor" data-anchor style="left:-0.25rem;top:calc(100% + 0.75rem)"></span>
@@ -578,7 +592,7 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 
   const thread = document.getElementById('thread');
   const tip = document.getElementById('thread-tip');
-  let xs, ys, lens, total, last, introEnd, introLen, introP;
+  let xs, ys, lens, total, last, introEnd, introLen, introP, tipW, tipH;
   const buildThread = () => {
     const intro = introPoints();
     const segs = toSegments([...intro, ...POINTS]);
@@ -588,8 +602,12 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     introEnd = (intro.length - 1) * 48;   // sample index where the intro meets the story thread
     introLen = lens[introEnd];
     introP = Math.max(.02, (xs[introEnd] - LEAD * 1000) / (TRAVEL_VW * 10)); // progress at which the tip reaches it
+    const svgBox = thread.ownerSVGElement.getBoundingClientRect();
+    tipW = 56 * 5700 / svgBox.width;
+    tipH = 56 * 1000 / svgBox.height;
+    tip.setAttribute('width', tipW);
+    tip.setAttribute('height', tipH);
   };
-  buildThread();
 
   const drawThread = p => {
     let i;
@@ -606,14 +624,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     }
     const len = lens[i] ?? total;
     thread.style.strokeDashoffset = `${1 - len / total}`;
-    const svgBox = thread.ownerSVGElement.getBoundingClientRect();
-    if (!svgBox.width || !svgBox.height) return;
-    const tipWidth = 56 * 5700 / svgBox.width;
-    const tipHeight = 56 * 1000 / svgBox.height;
-    tip.setAttribute('width', tipWidth);
-    tip.setAttribute('height', tipHeight);
-    tip.setAttribute('x', xs[i] - tipWidth / 2);
-    tip.setAttribute('y', ys[i] - tipHeight / 2);
+    tip.setAttribute('x', xs[i] - tipW / 2);
+    tip.setAttribute('y', ys[i] - tipH / 2);
     tip.style.opacity = len <= 0 || len >= total * .999 ? '0' : '1';
   };
 
@@ -627,22 +639,24 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
       el.toggleAttribute('data-shown', edge >= +el.dataset.at);
     }
   };
-  let current = -1;
+  let current = -1, tickRaf = 0;
   const tick = () => {
+    tickRaf = 0;
+    if (innerWidth < 768) return;   // phones use the vertical story below
+    if (!xs) buildThread();
     const range = Math.max(section.offsetHeight - innerHeight, 1);
     const target = Math.min(1, Math.max(0, (scrollY - section.offsetTop) / range));
     const next = current < 0 || Math.abs(target - current) < 5e-5 ? target : current + (target - current) * EASE;
     if (next !== current) {
       current = next;
-      if (innerWidth >= 768) {
-        track.style.transform = `translate3d(-${current * TRAVEL_VW}vw,0,0)`;
-        revealDesktop(current * TRAVEL_VW);
-      }
+      track.style.transform = `translate3d(-${current * TRAVEL_VW}vw,0,0)`;
+      revealDesktop(current * TRAVEL_VW);
       drawThread(current);
     }
-    requestAnimationFrame(tick);
+    if (current !== target) tickRaf = requestAnimationFrame(tick);   // keep easing until it settles
   };
-  requestAnimationFrame(tick);
+  const wake = () => { tickRaf ||= requestAnimationFrame(tick); };
+  wake();
 
   // Mobile: thread starts at the scribble's loose end and runs through the
   // [data-anchor] points; it draws down as the page scrolls.
@@ -651,10 +665,11 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
   const mThread = document.getElementById('m-thread');
   const mTip = document.getElementById('m-thread-tip');
   const scribble = document.getElementById('m-scribble');
-  let mSamples = null;
+  let mSamples = null, mTop = 0;
   const layoutMobile = () => {
     if (mobile.offsetParent === null) return;
     const box = mobile.getBoundingClientRect(), sb = scribble.getBoundingClientRect();
+    mTop = box.top + scrollY;
     const viewBox = scribble.viewBox.baseVal;
     const k = Math.min(sb.width / viewBox.width, sb.height / viewBox.height);
     const scribbleEnd = { x: 760, y: 430 }; // actual loose end of the scribble in the SVG's viewBox
@@ -672,9 +687,9 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     drawMobile();
   };
   const drawMobile = () => {
-    if (!mSamples) return;
+    if (!mSamples || innerWidth >= 768) return;
     const { xs, ys, lens, total } = mSamples;
-    const top = mobile.getBoundingClientRect().top;
+    const top = mTop - scrollY;
     const tipY = Math.min(innerHeight * .7 - top, ys[0] + Math.max(0, -top) * 1.4);
     let i = 0;
     while (i < xs.length - 1 && ys[i] < tipY) i++;
@@ -732,10 +747,23 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
   mobile.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   let raf = 0;
-  addEventListener('scroll', () => { raf ||= requestAnimationFrame(() => { raf = 0; drawMobile(); }); }, { passive: true });
-  addEventListener('resize', () => { buildThread(); current = -1; layoutMobile(); });
+  addEventListener('scroll', () => { wake(); raf ||= requestAnimationFrame(() => { raf = 0; drawMobile(); }); }, { passive: true });
+  // Phones fire resize whenever the URL bar slides in/out; the mobile layout only
+  // depends on width (it uses svh), so skip those and debounce the rest.
+  let lastW = innerWidth, lastH = innerHeight, resizeT = 0;
+  addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => {
+      if (innerWidth === lastW && (innerWidth < 768 || innerHeight === lastH)) return;
+      lastW = innerWidth; lastH = innerHeight;
+      xs = null; current = -1; wake(); layoutMobile();
+    }, 100);
+  });
   layoutMobile();
   document.fonts?.ready.then(layoutMobile);
+  addEventListener('load', () => {
+    if (innerWidth >= 768) track.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = 'eager'; });
+  });
 })();
 
 // Floating objects: tilt toward the pointer, and type out their label in a
@@ -763,7 +791,9 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     out.textContent = '';
     fig._typing = setInterval(() => { out.textContent = text.slice(0, ++n); if (n >= text.length) clearInterval(fig._typing); }, 26);
   };
+  const onScreen = new IntersectionObserver(entries => entries.forEach(en => en.target.classList.toggle('off', !en.isIntersecting)), { rootMargin: '10%' });
   document.querySelectorAll('.figure').forEach(fig => {
+    onScreen.observe(fig);
     const img = fig.querySelector('img');
     const tilt = (x, y) => {
       img.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 14}deg) scale(${fig.classList.contains('open') ? 1.08 : 1}) translateZ(0)`;
@@ -786,5 +816,20 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
   });
 })();
 </script>
+<!-- TEMP: image number labels for review — delete this whole block when done -->
+<style>
+.tmp-img-label{position:absolute;top:0;left:0;z-index:9999;pointer-events:none;background:#e11d48;color:#fff;font:700 12px/1.2 system-ui,sans-serif;padding:3px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+</style>
+<script>
+document.querySelectorAll('img').forEach((img, i) => {
+  const host = img.closest('.figure') || img.parentElement;
+  if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+  const tag = document.createElement('span');
+  tag.className = 'tmp-img-label';
+  tag.textContent = '#' + (i + 1) + ' · ' + img.getAttribute('src').split('/').pop();
+  host.appendChild(tag);
+});
+</script>
+<!-- /TEMP -->
 </body>
 </html>
