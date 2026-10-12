@@ -132,9 +132,10 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 @keyframes pulse{50%{opacity:.5}}
 .figure{position:relative;flex-shrink:0;perspective:900px}
 .figure.sm{height:9rem;width:9rem}
+.figure.xs{height:7rem;width:7rem}
 .figure.md{height:11rem;width:11rem}
 .figure.fill{height:100%;width:100%}
-@media (min-width:1024px){.figure.sm{height:11rem;width:11rem}.figure.md{height:14rem;width:14rem}}
+@media (min-width:1024px){.figure.sm{height:11rem;width:11rem}.figure.xs{height:8.25rem;width:8.25rem}.figure.md{height:14rem;width:14rem}}
 .figure .shadow{position:absolute;bottom:6%;left:50%;height:1rem;width:50%;border-radius:50%;background:color-mix(in oklab,var(--foreground) 20%,transparent);filter:blur(12px);transform:translateX(-50%);transition:all .5s}
 .figure.open .shadow{transform:translateX(-50%) scale(.8);opacity:.6}
 .figure .float{height:100%;width:100%;animation:5s ease-in-out infinite float-object}
@@ -211,25 +212,25 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
         <svg class="thread" aria-hidden="true" viewBox="0 0 5700 1000" preserveAspectRatio="none">
           <path id="thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
           <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.058s;animation-delay:0.207s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M652 341 C736 176 676 270 595 393 C551 502 511 179 608 312 C612 397 708 447 616 375 C736 373 748 312 627 469 C552 479 478 362 535 275 C572 284 689 483 596 461" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.064s;animation-delay:0.325s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M566 565 C690 668 539 510 601 520 C501 495 679 640 594 488 C588 419 456 553 539 509 C654 369 727 177 651 357 C569 254 524 516 473 584 C434 629 437 615 543 528" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.073s;animation-delay:0.457s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M617 482 C541 668 630 423 525 561 C455 646 384 347 449 499 C539 470 700 212 622 354 C596 424 286 189 397 302 C446 458 674 337 547 482 C549 579 634 356 633 287" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.085s;animation-delay:0.608s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M661 443 C716 574 443 556 529 573 C594 538 432 461 514 588 C517 405 556 436 450 322 C505 459 612 520 577 556 C604 558 721 555 590 440 C525 596 458 425 392 320" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.104s;animation-delay:0.786s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M462 352 C597 406 484 646 429 547 C559 367 672 461 640 371 C574 334 357 135 479 238 C445 135 484 601 551 447 C565 450 754 442 661 416 C754 468 560 135 476 191" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.139s;animation-delay:1.008s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M510 212 C417 308 529 344 558 194 C625 135 578 668 446 536 C331 668 614 267 632 276 C754 178 412 653 405 488 C465 476 724 388 594 268 C622 135 486 278 453 295" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C569 524 619 135 569 199" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <circle id="thread-dot" r="9" cx="569" cy="199" style="opacity:0" fill="currentColor" />
+          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C620 560 715 445 760 430" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <image id="thread-tip" href="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" width="0" height="0" preserveAspectRatio="none" style="opacity:0" />
         </svg>
         <div class="layer">
           <div class="hero">
@@ -251,16 +252,17 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           </div>
 
           <!-- chapter 1 · jack of all trades (100–175vw) -->
-          <div class="at" style="left:100vw;top:6vh"><div class="figure sm" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:101vw;top:62vh"><div class="figure sm" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at reveal" style="left:116vw;top:36vh;width:34vw;text-align:center" data-at="122">
+          <div class="at" style="left:122vw;top:9vh"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs.webp" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:128vw;top:63vh"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo.webp" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <p class="at reveal" data-mode="thread" data-at="117" style="left:113.5vw;top:44vh;translate:-50% -50%;white-space:nowrap;font-family:var(--serif);font-weight:500;font-size:1.5rem;letter-spacing:.08em">IT'S OKAY</p>
+          <div class="at reveal" style="left:130vw;top:32vh;width:30vw;text-align:center" data-mode="thread" data-at="135">
             <p class="muted" style="font-size:1.125rem">stuck in your head?</p>
             <h2 class="d-display" style="white-space:nowrap">we've all been there.</h2>
             <p class="muted" style="font-size:1.125rem;margin-top:.5rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
           </div>
-          <div class="at" style="left:121vw;top:73vh"><div class="figure sm" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:134vw;top:10vh"><div class="figure sm" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
-          <div class="at" style="left:150vw;top:66vh"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:148vw;top:62vh"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later.webp" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:152vw;top:9vh"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email.webp" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
+          <div class="at" style="left:168vw;top:68vh"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
           <div class="d-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float hang"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
 
           <!-- chapter 2 · few things have my heart (180–290vw) -->
@@ -323,29 +325,29 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     <div class="mobile" id="mobile">
       <svg class="m-thread" id="m-thread-svg" aria-hidden="true">
         <path id="m-thread" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-        <circle id="m-thread-dot" r="4.5" cx="0" cy="0" style="opacity:0" fill="currentColor" />
+        <image id="m-thread-tip" href="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" width="56" height="56" preserveAspectRatio="none" style="opacity:0" />
       </svg>
       <div class="m-hero">
         <svg class="m-scribble" id="m-scribble" aria-hidden="true" viewBox="250 100 550 600">
           <path class="animate-draw-string" style="animation-duration:0.049s;animation-delay:0.000s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M412 441 C515 397 634 254 612 324 C514 323 496 516 405 384 C462 554 503 411 563 536 C550 451 352 221 429 252 C463 251 542 590 592 462 C722 444 518 320 633 498" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.051s;animation-delay:0.049s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 498 C733 324 559 351 502 325 C451 436 535 231 665 369 C653 189 542 154 453 252 C356 135 579 427 545 447 C580 505 551 553 468 379 C518 265 542 377 549 499" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.053s;animation-delay:0.099s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M549 499 C417 489 679 300 622 421 C560 362 446 473 393 465 C424 562 372 482 401 372 C511 215 515 477 398 393 C299 375 474 580 439 424 C406 450 754 502 668 389" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.055s;animation-delay:0.152s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M668 389 C754 375 628 135 588 240 C647 360 527 578 489 496 C412 647 637 651 506 469 C517 579 481 408 530 253 C626 196 462 257 574 279 C588 381 649 162 652 341" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.058s;animation-delay:0.207s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M652 341 C736 176 676 270 595 393 C551 502 511 179 608 312 C612 397 708 447 616 375 C736 373 748 312 627 469 C552 479 478 362 535 275 C572 284 689 483 596 461" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.061s;animation-delay:0.265s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M596 461 C546 415 740 502 646 350 C568 483 705 479 578 470 C598 357 572 439 563 438 C591 259 667 301 541 295 C514 408 442 336 425 339 C477 175 577 532 566 565" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.064s;animation-delay:0.325s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M566 565 C690 668 539 510 601 520 C501 495 679 640 594 488 C588 419 456 553 539 509 C654 369 727 177 651 357 C569 254 524 516 473 584 C434 629 437 615 543 528" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.068s;animation-delay:0.389s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M543 528 C442 532 526 141 593 255 C601 231 606 485 639 519 C647 390 459 557 538 507 C576 518 628 307 533 264 C629 164 569 587 504 469 C613 399 567 642 617 482" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.073s;animation-delay:0.457s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M617 482 C541 668 630 423 525 561 C455 646 384 347 449 499 C539 470 700 212 622 354 C596 424 286 189 397 302 C446 458 674 337 547 482 C549 579 634 356 633 287" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.078s;animation-delay:0.530s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M633 287 C549 135 414 322 520 498 C534 503 529 135 511 184 C425 135 660 668 568 590 C683 437 488 449 606 279 C596 379 420 421 467 434 C471 407 689 259 661 443" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.085s;animation-delay:0.608s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M661 443 C716 574 443 556 529 573 C594 538 432 461 514 588 C517 405 556 436 450 322 C505 459 612 520 577 556 C604 558 721 555 590 440 C525 596 458 425 392 320" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.093s;animation-delay:0.693s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M392 320 C477 284 564 456 457 313 C510 414 656 303 584 339 C645 177 559 393 602 405 C470 350 507 466 470 418 C398 587 607 453 562 514 C605 541 471 310 462 352" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.104s;animation-delay:0.786s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M462 352 C597 406 484 646 429 547 C559 367 672 461 640 371 C574 334 357 135 479 238 C445 135 484 601 551 447 C565 450 754 442 661 416 C754 468 560 135 476 191" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.118s;animation-delay:0.890s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M476 191 C502 289 516 578 638 416 C547 405 304 412 394 413 C423 246 578 558 458 588 C465 625 583 385 619 466 C661 489 450 271 508 189 C453 135 441 135 510 212" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.139s;animation-delay:1.008s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M510 212 C417 308 529 344 558 194 C625 135 578 668 446 536 C331 668 614 267 632 276 C754 178 412 653 405 488 C465 476 724 388 594 268 C622 135 486 278 453 295" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.173s;animation-delay:1.148s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M453 295 C373 135 426 166 418 308 C403 372 613 387 625 476 C647 446 734 396 660 384 C754 555 570 156 507 255 C403 404 586 275 509 227 C471 141 443 489 393 465" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
           <path class="animate-draw-string" style="animation-duration:0.239s;animation-delay:1.320s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M393 465 C418 515 700 369 632 486 C564 668 746 567 634 424 C510 258 381 378 443 406 C476 256 497 135 486 246 C374 313 426 307 413 257 C379 248 440 397 518 456" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#e63946" stroke-width="2.2" stroke-linecap="round" />
-          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C569 524 619 135 569 199" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.497s;animation-delay:1.559s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M518 456 C584 584 366 418 481 562 C565 608 613 381 540 489 C520 398 704 245 621 295 C662 479 342 484 389 465 C455 624 444 499 463 549 C354 668 438 372 552 530" fill="none" stroke="#0a7c75" stroke-width="2.2" stroke-linecap="round" />
+          <path class="animate-draw-string" style="animation-duration:0.544s;animation-delay:2.056s;animation-timing-function:linear" pathLength="1" stroke-dasharray="1" d="M552 530 C620 560 715 445 760 430" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" />
           </svg>
         <div class="m-note animate-reveal d220">
           <svg aria-hidden="true" viewBox="0 0 40 30">
@@ -359,8 +361,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
         <span class="anchor" data-anchor style="left:93%;top:122svh"></span>
       </div>
       <div class="m-trades">
-        <div class="obj" style="left:3%;top:20px"><div class="figure sm" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
-        <div class="obj" style="right:5%;top:190px"><div class="figure sm" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:3%;top:30px"><div class="figure xs" data-label="tab 38 of 'best desk chair 2026'."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="assets/nudge-tabs.webp" alt="tabs open: 37" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:5%;top:150px"><div class="figure xs" data-label="rewriting the same email. again."><div class="shadow"></div><div class="float" style="animation-delay:.4s"><img src="assets/nudge-email.webp" alt="an inbox burying someone" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
         <span class="anchor" data-anchor style="left:95%;top:400px"></span>
         <div class="center reveal">
           <p class="muted">stuck in your head?</p>
@@ -368,8 +370,8 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
           <p class="muted" style="margin-top:.25rem;font-size:.875rem">hours on a simple decision. the same tabs, open for weeks. a 10-minute task, avoided for a month.</p>
         </div>
         <span class="anchor" data-anchor style="left:95%;top:590px"></span>
-        <div class="obj" style="left:4%;top:630px"><div class="figure sm" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
-        <div class="obj" style="right:3%;top:820px"><div class="figure sm" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="left:4%;top:610px"><div class="figure xs" data-label="screenshotted the to-do list. that counts, right?"><div class="shadow"></div><div class="float" style="animation-delay:.8s"><img src="assets/nudge-todo.webp" alt="a never-ending to-do list" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
+        <div class="obj" style="right:3%;top:700px"><div class="figure xs" data-label="head of procrastination."><div class="shadow"></div><div class="float" style="animation-delay:1.2s"><img src="assets/nudge-later.webp" alt="an alarm clock labelled later, someone asleep" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
         <div class="obj" style="left:6%;top:1010px"><div class="figure sm" data-label="the ball's in your court."><div class="shadow"></div><div class="float" style="animation-delay:1.6s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div><span class="anchor" data-anchor style="left:50%;top:50%"></span></div>
         <span class="anchor" data-anchor style="left:4%;top:1260px"></span>
         <div class="m-climber" id="m-climber"><div class="figure fill" data-label="hanging on by a thread."><div class="shadow"></div><div class="float" style="animation-delay:0s"><img src="https://ik.imagekit.io/kaxkoe34s/Rectangle_2301-removebg-preview.png" alt="nudge, a smiling teal blob" decoding="async" draggable="false" /></div><div class="bubble" aria-hidden="true"><span></span><i>|</i></div></div></div>
@@ -496,7 +498,42 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
   const TRACK_VW = 570, TRAVEL_VW = 470;   // track width / distance it travels
   const LEAD = .55, EASE = .085;           // thread tip leads at 55% of the screen; smoothing factor
   // Thread waypoints in vw / vh units: [x, y, loop?] — a third value draws a small loop.
-  const POINTS = [[56.9,19.9],[80,58],[98,50],[110,44,8],[120,66],[132,68],[142,66,-6],[151,56],[156,40],[164,29],[171,33],[174.5,35.6],[181,42],[186,62],[198,68],[205,68],[216,50],[229,34],[233,50],[250,58],[262,70],[272,88],[292,54],[304,48],[322,51],[340,52],[358,50],[376,46],[394,43],[410,46],[422,60],[440,70],[458,71],[474,70,17],[496,76],[514,78],[528,70],[537,59]];
+  // The intro (scribble -> looser loop -> almost-clean loop) is prepended at runtime.
+  const POINTS = [[120,66],[126,80],[140,86],[152,84],[160,78],[164,58],[166,40],[171,33],[174.5,35.6],[181,42],[186,62],[198,68],[205,68],[216,50],[229,34],[233,50],[250,58],[262,70],[272,88],[292,54],[304,48],[322,51],[340,52],[358,50],[376,46],[394,43],[410,46],[422,60],[440,70],[458,71],[474,70,17],[496,76],[514,78],[528,70],[537,59]];
+
+  // Intro: one unbroken line leaves the scribble's loose end, winds into a looser
+  // loop, then a nearly clean one, then runs on as the story thread.
+  const SCRIBBLE_END = [76, 43];   // loose end of the hand-drawn scribble (vw, vh)
+  // Each loop: centre (vw, vh), radius (fraction of viewport height), turns, how tangled, sideways drift.
+  const LOOPS = [
+    { cx: 91, cy: 40, r: .14, turns: 4, tangle: .45, drift: .3, seed: 1 },
+    { cx: 113, cy: 44, r: .12, turns: 3, tangle: .06, drift: .15, seed: 3 },
+  ];
+  // A loop is entered at its bottom heading right, winds round, and leaves the same way,
+  // so the line flows straight through it. The wobble fades out at both ends.
+  const loopPoints = ({ cx, cy, r, turns, tangle, drift, seed }) => {
+    const ry = r * 100, rx = r * innerHeight / innerWidth * 100, n = Math.ceil(turns * 64), pts = [];
+    for (let i = 0; i <= n; i++) {
+      const s = i / n, t = Math.PI / 2 - s * turns * 2 * Math.PI;
+      const a = tangle * Math.pow(Math.sin(Math.PI * s), 1.5);
+      const k = 1 + a * (.3 * Math.sin(1.7 * t + seed) + .2 * Math.sin(2.9 * t + 2 * seed) + .25 * Math.sin(.63 * t + 4));
+      const ox = a * (.45 * Math.sin(.37 * t + .5 + seed) + .3 * Math.sin(.91 * t + 1.3));
+      const oy = a * (.45 * Math.sin(.43 * t + 2) + .3 * Math.sin(1.07 * t + seed));
+      pts.push([cx + rx * (drift * s + k * Math.cos(t) + ox), cy + ry * (k * Math.sin(t) + oy)]);
+    }
+    return pts;
+  };
+  // Lead-in / lead-out points around each loop keep the spacing even, so the curve has no kinks.
+  const introPoints = () => {
+    const A = loopPoints(LOOPS[0]), B = loopPoints(LOOPS[1]);
+    const [a0, a1, b0, b1] = [A[0], A.at(-1), B[0], B.at(-1)];
+    return [
+      SCRIBBLE_END, [SCRIBBLE_END[0] + 4.5, SCRIBBLE_END[1] - 1],
+      [a0[0] - 4, a0[1]], [a0[0] - 1.5, a0[1]], ...A, [a1[0] + 1.5, a1[1]],
+      [(a1[0] + b0[0]) / 2, (a1[1] + b0[1]) / 2],
+      [b0[0] - 1.5, b0[1]], ...B, [b1[0] + 1.5, b1[1]], [b1[0] + 4, b1[1] + 2],
+    ];
+  };
 
   // Catmull-Rom through the waypoints -> cubic bezier segments.
   const toSegments = (pts, scale = 10, squash = 1.8) => {
@@ -539,23 +576,45 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     return { xs, ys, lens, total };
   };
 
-  const segs = toSegments(POINTS);
   const thread = document.getElementById('thread');
-  const dot = document.getElementById('thread-dot');
-  thread.setAttribute('d', toPath(segs));
-  const { xs, ys, lens, total } = sample(segs);
-  const last = xs.length - 1;
+  const tip = document.getElementById('thread-tip');
+  let xs, ys, lens, total, last, introEnd, introLen, introP;
+  const buildThread = () => {
+    const intro = introPoints();
+    const segs = toSegments([...intro, ...POINTS]);
+    thread.setAttribute('d', toPath(segs));
+    ({ xs, ys, lens, total } = sample(segs));
+    last = xs.length - 1;
+    introEnd = (intro.length - 1) * 48;   // sample index where the intro meets the story thread
+    introLen = lens[introEnd];
+    introP = Math.max(.02, (xs[introEnd] - LEAD * 1000) / (TRAVEL_VW * 10)); // progress at which the tip reaches it
+  };
+  buildThread();
 
   const drawThread = p => {
-    const tail = Math.max(0, (p - .9) / .1) * 150;          // finish the last stretch at the very end
-    const tipX = p * TRAVEL_VW * 10 + LEAD * 1000 + tail;
-    let i = 0;
-    while (i < last && xs[i] < tipX) i++;
+    let i;
+    if (p < introP) {
+      // Through the loops, the tip moves by length so it winds round them steadily.
+      const want = introLen * p / introP;
+      let lo = 0, hi = introEnd;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (lens[m] < want) lo = m + 1; else hi = m; }
+      i = lo;
+    } else {
+      const tipX = p * TRAVEL_VW * 10 + LEAD * 1000 + Math.max(0, (p - .9) / .1) * 150; // tail finishes the last stretch at the very end
+      i = introEnd;
+      while (i < last && xs[i] < tipX) i++;
+    }
     const len = lens[i] ?? total;
     thread.style.strokeDashoffset = `${1 - len / total}`;
-    dot.setAttribute('cx', xs[i]);
-    dot.setAttribute('cy', ys[i]);
-    dot.style.opacity = len <= 0 || len >= total * .999 ? '0' : '1';
+    const svgBox = thread.ownerSVGElement.getBoundingClientRect();
+    if (!svgBox.width || !svgBox.height) return;
+    const tipWidth = 56 * 5700 / svgBox.width;
+    const tipHeight = 56 * 1000 / svgBox.height;
+    tip.setAttribute('width', tipWidth);
+    tip.setAttribute('height', tipHeight);
+    tip.setAttribute('x', xs[i] - tipWidth / 2);
+    tip.setAttribute('y', ys[i] - tipHeight / 2);
+    tip.style.opacity = len <= 0 || len >= total * .999 ? '0' : '1';
   };
 
   const section = document.getElementById('brain');
@@ -590,14 +649,16 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
   const mobile = document.getElementById('mobile');
   const mSvg = document.getElementById('m-thread-svg');
   const mThread = document.getElementById('m-thread');
-  const mDot = document.getElementById('m-thread-dot');
+  const mTip = document.getElementById('m-thread-tip');
   const scribble = document.getElementById('m-scribble');
   let mSamples = null;
   const layoutMobile = () => {
     if (mobile.offsetParent === null) return;
     const box = mobile.getBoundingClientRect(), sb = scribble.getBoundingClientRect();
-    const k = Math.min(sb.width / 550, sb.height / 600);  // viewBox 250 100 550 600, scribble end at (569,199)
-    const pts = [[sb.left - box.left + (sb.width - 550 * k) / 2 + 319 * k, sb.top - box.top + (sb.height - 600 * k) / 2 + 99 * k]];
+    const viewBox = scribble.viewBox.baseVal;
+    const k = Math.min(sb.width / viewBox.width, sb.height / viewBox.height);
+    const scribbleEnd = { x: 760, y: 430 }; // actual loose end of the scribble in the SVG's viewBox
+    const pts = [[sb.left - box.left + (sb.width - viewBox.width * k) / 2 + (scribbleEnd.x - viewBox.x) * k, sb.top - box.top + (sb.height - viewBox.height * k) / 2 + (scribbleEnd.y - viewBox.y) * k]];
     mobile.querySelectorAll('[data-anchor]').forEach(a => {
       const r = a.getBoundingClientRect(), loop = Number(a.dataset.anchor);
       pts.push(loop ? [r.left - box.left, r.top - box.top, loop] : [r.left - box.left, r.top - box.top]);
@@ -619,9 +680,9 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
     while (i < xs.length - 1 && ys[i] < tipY) i++;
     const len = lens[i] ?? 0;
     mThread.style.strokeDashoffset = `${1 - len / total}`;
-    mDot.setAttribute('cx', xs[i]);
-    mDot.setAttribute('cy', ys[i]);
-    mDot.style.opacity = len > 0 && len < total * .999 ? '1' : '0';
+    mTip.setAttribute('x', xs[i] - 28);
+    mTip.setAttribute('y', ys[i] - 28);
+    mTip.style.opacity = len > 0 && len < total * .999 ? '1' : '0';
   };
   // Climber hangs on the thread; drag it sideways to slide it along.
   const climber = document.getElementById('m-climber');
@@ -672,7 +733,7 @@ header nav{display:none;align-items:center;gap:1.75rem;font-size:.875rem;line-he
 
   let raf = 0;
   addEventListener('scroll', () => { raf ||= requestAnimationFrame(() => { raf = 0; drawMobile(); }); }, { passive: true });
-  addEventListener('resize', layoutMobile);
+  addEventListener('resize', () => { buildThread(); current = -1; layoutMobile(); });
   layoutMobile();
   document.fonts?.ready.then(layoutMobile);
 })();
